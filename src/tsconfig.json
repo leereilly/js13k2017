@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "amd",
+    "target": "es5",
+    "outDir": "tsc",
+    "rootDir": "ts",
+    "sourceMap": true,
+    "declaration": true
+  },
+  "exclude": [
+    "tsc",
+    "node_modules",
+    "compile",
+    "build"
+  ]
+}
