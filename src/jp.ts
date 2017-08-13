@@ -1,5 +1,10 @@
+const KEY_LEFT = 37;
 const KEY_UP = 38;
+const KEY_RIGHT = 39;
 const KEY_DOWN = 40;
+
+
+
 const KEY_SPACE = 32;
 
 class Point {
@@ -181,9 +186,11 @@ class Player extends GameObject {
     lastShotTime: number;
     breakBetweenShots: number;
     shots: number;
+    engine: Engine;
 
     constructor(engine: Engine, x: number, y: number) {
         super(engine, x, y);
+        this.engine = engine;
         this.sprite.srcX = 0;
         this.sprite.srcY = 0;
         this.sprite.width = 2 * 64;
@@ -208,6 +215,25 @@ class Player extends GameObject {
             bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, 25, speedY, 200);
             this.lastShotTime = frame;
         }
+    }
+
+
+    update() {
+        super.update();
+        if (this.sprite.pos.x > this.engine.getWidth() - this.sprite.width/2) {
+            this.sprite.pos.x = this.engine.getWidth() - this.sprite.width/2;
+        }
+        if (this.sprite.pos.x < this.sprite.width/2) {
+            this.sprite.pos.x = this.sprite.width/2;
+        }
+
+        if (this.sprite.pos.y > this.engine.getHeight() - this.sprite.height/2) {
+            this.sprite.pos.y = this.engine.getHeight() - this.sprite.height/2;
+        }
+        if (this.sprite.pos.y < this.sprite.height/2) {
+            this.sprite.pos.y = this.sprite.height/2;
+        }
+
     }
 }
 
@@ -269,6 +295,83 @@ class BulletManager {
     }
 }
 
+class Particle extends GameObject {
+    lifetime: number;
+    maxLifetime: number;
+
+    constructor(engine: Engine, x: number, y: number, lifetime: number) {
+        super(engine, x, y);
+        this.sprite.srcX = 2 * 64;
+        this.sprite.srcY = 64;
+        this.sprite.width = 64;
+        this.sprite.height = 64;
+        this.reset(lifetime);
+    }
+
+    reset(lifetime: number) {
+        this.lifetime = lifetime;
+        this.maxLifetime = lifetime;
+        this.hp = 1;
+        this.sprite.visible = true;
+        this.sprite.alpha = 1;
+    }
+
+    update() {
+        this.lifetime--;
+        if (this.lifetime < 0) {
+            this.kill();
+        } else {
+            this.sprite.alpha = this.lifetime / this.maxLifetime;
+        }
+        super.update();
+    }
+}
+
+class ParticleManager {
+    particles: Particle[];
+
+    constructor(game: Game) {
+        this.particles = [];
+
+        for (let i = 0; i < 100; i++) {
+            let b = new Particle(game.engine, 0, 0, 0);
+            this.particles.push(b);
+            b.kill();
+        }
+    }
+
+    getFirstDead(): Particle {
+        for (let p of this.particles) {
+            if (p.hp == 0) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    spawn(x: number, y: number, speedX: number, speedY: number, lifetime: number) {
+        let p = this.getFirstDead();
+        if (p != null) {
+            p.reset(lifetime);
+            p.sprite.pos.x = x;
+            p.sprite.pos.y = y;
+            p.speed.x = speedX;
+            p.speed.y = speedY;
+            p.hp = 1;
+            p.sprite.visible = true;
+        }
+    }
+
+    update() {
+        for (let p of this.particles) {
+            if (p.hp > 0) {
+                p.update();
+            }
+        }
+    }
+}
+
+
 class Starfield {
     stars: Sprite[];
     game: Game;
@@ -306,13 +409,14 @@ class Game {
     player: Player;
     bulletManager: BulletManager;
     starfield: Starfield;
-
+    particles: ParticleManager;
 
     constructor(engine: Engine) {
         this.engine = engine;
         this.gameObjects = [];
         this.bulletManager = new BulletManager(this);
         this.starfield = new Starfield(this);
+        this.particles = new ParticleManager(this);
     }
 
     initialize() {
@@ -324,25 +428,35 @@ class Game {
 
     update(frame: number) {
         this.starfield.update();
+        this.particles.update();
+
+        this.particles.spawn(this.player.sprite.pos.x - 50, this.player.sprite.pos.y, -1 - Math.random(), 0.8 - Math.random() * 1.6, 55);
 
         if (!this.logo.hide()) {
             return;
         }
 
+
+
+        //input
         if (this.engine.isKeyDown(KEY_DOWN)) {
             this.player.speed.y += 1;
         }
-
         if (this.engine.isKeyDown(KEY_UP)) {
             this.player.speed.y -= 1;
         }
-
+        if (this.engine.isKeyDown(KEY_LEFT)) {
+            this.player.speed.x -= 1;
+        }
+        if (this.engine.isKeyDown(KEY_RIGHT)) {
+            this.player.speed.x += 1;
+        }
         if (this.engine.isKeyDown(KEY_SPACE)) {
             this.player.shoot(frame, this.bulletManager);
         }
-
+        //dampening
         this.player.speed.y *= 0.9;
-
+        this.player.speed.x *= 0.9;
 
         for (let obj of this.gameObjects) {
             obj.update();

@@ -8,7 +8,9 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var KEY_LEFT = 37;
 var KEY_UP = 38;
+var KEY_RIGHT = 39;
 var KEY_DOWN = 40;
 var KEY_SPACE = 32;
 var Point = (function () {
@@ -140,6 +142,7 @@ var Player = (function (_super) {
     __extends(Player, _super);
     function Player(engine, x, y) {
         var _this = _super.call(this, engine, x, y) || this;
+        _this.engine = engine;
         _this.sprite.srcX = 0;
         _this.sprite.srcY = 0;
         _this.sprite.width = 2 * 64;
@@ -161,6 +164,21 @@ var Player = (function (_super) {
             }
             bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, 25, speedY, 200);
             this.lastShotTime = frame;
+        }
+    };
+    Player.prototype.update = function () {
+        _super.prototype.update.call(this);
+        if (this.sprite.pos.x > this.engine.getWidth() - this.sprite.width / 2) {
+            this.sprite.pos.x = this.engine.getWidth() - this.sprite.width / 2;
+        }
+        if (this.sprite.pos.x < this.sprite.width / 2) {
+            this.sprite.pos.x = this.sprite.width / 2;
+        }
+        if (this.sprite.pos.y > this.engine.getHeight() - this.sprite.height / 2) {
+            this.sprite.pos.y = this.engine.getHeight() - this.sprite.height / 2;
+        }
+        if (this.sprite.pos.y < this.sprite.height / 2) {
+            this.sprite.pos.y = this.sprite.height / 2;
         }
     };
     return Player;
@@ -217,6 +235,76 @@ var BulletManager = (function () {
     };
     return BulletManager;
 }());
+var Particle = (function (_super) {
+    __extends(Particle, _super);
+    function Particle(engine, x, y, lifetime) {
+        var _this = _super.call(this, engine, x, y) || this;
+        _this.sprite.srcX = 2 * 64;
+        _this.sprite.srcY = 64;
+        _this.sprite.width = 64;
+        _this.sprite.height = 64;
+        _this.reset(lifetime);
+        return _this;
+    }
+    Particle.prototype.reset = function (lifetime) {
+        this.lifetime = lifetime;
+        this.maxLifetime = lifetime;
+        this.hp = 1;
+        this.sprite.visible = true;
+        this.sprite.alpha = 1;
+    };
+    Particle.prototype.update = function () {
+        this.lifetime--;
+        if (this.lifetime < 0) {
+            this.kill();
+        }
+        else {
+            this.sprite.alpha = this.lifetime / this.maxLifetime;
+        }
+        _super.prototype.update.call(this);
+    };
+    return Particle;
+}(GameObject));
+var ParticleManager = (function () {
+    function ParticleManager(game) {
+        this.particles = [];
+        for (var i = 0; i < 100; i++) {
+            var b = new Particle(game.engine, 0, 0, 0);
+            this.particles.push(b);
+            b.kill();
+        }
+    }
+    ParticleManager.prototype.getFirstDead = function () {
+        for (var _i = 0, _a = this.particles; _i < _a.length; _i++) {
+            var p = _a[_i];
+            if (p.hp == 0) {
+                return p;
+            }
+        }
+        return null;
+    };
+    ParticleManager.prototype.spawn = function (x, y, speedX, speedY, lifetime) {
+        var p = this.getFirstDead();
+        if (p != null) {
+            p.reset(lifetime);
+            p.sprite.pos.x = x;
+            p.sprite.pos.y = y;
+            p.speed.x = speedX;
+            p.speed.y = speedY;
+            p.hp = 1;
+            p.sprite.visible = true;
+        }
+    };
+    ParticleManager.prototype.update = function () {
+        for (var _i = 0, _a = this.particles; _i < _a.length; _i++) {
+            var p = _a[_i];
+            if (p.hp > 0) {
+                p.update();
+            }
+        }
+    };
+    return ParticleManager;
+}());
 var Starfield = (function () {
     function Starfield(game) {
         this.stars = [];
@@ -250,6 +338,7 @@ var Game = (function () {
         this.gameObjects = [];
         this.bulletManager = new BulletManager(this);
         this.starfield = new Starfield(this);
+        this.particles = new ParticleManager(this);
     }
     Game.prototype.initialize = function () {
         this.logo = new Logo(this.engine);
@@ -259,19 +348,30 @@ var Game = (function () {
     };
     Game.prototype.update = function (frame) {
         this.starfield.update();
+        this.particles.update();
+        this.particles.spawn(this.player.sprite.pos.x - 50, this.player.sprite.pos.y, -1 - Math.random(), 0.8 - Math.random() * 1.6, 55);
         if (!this.logo.hide()) {
             return;
         }
+        //input
         if (this.engine.isKeyDown(KEY_DOWN)) {
             this.player.speed.y += 1;
         }
         if (this.engine.isKeyDown(KEY_UP)) {
             this.player.speed.y -= 1;
         }
+        if (this.engine.isKeyDown(KEY_LEFT)) {
+            this.player.speed.x -= 1;
+        }
+        if (this.engine.isKeyDown(KEY_RIGHT)) {
+            this.player.speed.x += 1;
+        }
         if (this.engine.isKeyDown(KEY_SPACE)) {
             this.player.shoot(frame, this.bulletManager);
         }
+        //dampening
         this.player.speed.y *= 0.9;
+        this.player.speed.x *= 0.9;
         for (var _i = 0, _a = this.gameObjects; _i < _a.length; _i++) {
             var obj = _a[_i];
             obj.update();

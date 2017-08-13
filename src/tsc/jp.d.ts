@@ -1,4 +1,6 @@
+declare const KEY_LEFT = 37;
 declare const KEY_UP = 38;
+declare const KEY_RIGHT = 39;
 declare const KEY_DOWN = 40;
 declare const KEY_SPACE = 32;
 declare class Point {
@@ -54,8 +56,10 @@ declare class Player extends GameObject {
     lastShotTime: number;
     breakBetweenShots: number;
     shots: number;
+    engine: Engine;
     constructor(engine: Engine, x: number, y: number);
     shoot(frame: number, bulletManager: BulletManager): void;
+    update(): void;
 }
 declare class Bullet extends GameObject {
     lifetime: number;
@@ -67,6 +71,20 @@ declare class BulletManager {
     constructor(game: Game);
     getFirstDead(): Bullet;
     shoot(x: number, y: number, speedX: number, speedY: number, lifetime: number): void;
+}
+declare class Particle extends GameObject {
+    lifetime: number;
+    maxLifetime: number;
+    constructor(engine: Engine, x: number, y: number, lifetime: number);
+    reset(lifetime: number): void;
+    update(): void;
+}
+declare class ParticleManager {
+    particles: Particle[];
+    constructor(game: Game);
+    getFirstDead(): Particle;
+    spawn(x: number, y: number, speedX: number, speedY: number, lifetime: number): void;
+    update(): void;
 }
 declare class Starfield {
     stars: Sprite[];
@@ -81,6 +99,7 @@ declare class Game {
     player: Player;
     bulletManager: BulletManager;
     starfield: Starfield;
+    particles: ParticleManager;
     constructor(engine: Engine);
     initialize(): void;
     update(frame: number): void;
