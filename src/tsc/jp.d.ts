@@ -49,7 +49,7 @@ declare class GameObject {
     speed: Point;
     hp: number;
     constructor(engine: Engine, x: number, y: number);
-    update(): void;
+    update(frame: number): void;
     kill(): void;
 }
 declare class Player extends GameObject {
@@ -59,32 +59,63 @@ declare class Player extends GameObject {
     engine: Engine;
     constructor(engine: Engine, x: number, y: number);
     shoot(frame: number, bulletManager: BulletManager): void;
-    update(): void;
+    update(frame: number): void;
+    takeDamage(amount: number): void;
 }
 declare class Bullet extends GameObject {
     lifetime: number;
     constructor(engine: Engine, x: number, y: number);
-    update(): void;
+    update(frame: number): void;
 }
 declare class BulletManager {
     bullets: Bullet[];
     constructor(game: Game);
     getFirstDead(): Bullet;
     shoot(x: number, y: number, speedX: number, speedY: number, lifetime: number): void;
+    update(frame: number, enemyManager: EnemyManager): void;
 }
 declare class Particle extends GameObject {
     lifetime: number;
     maxLifetime: number;
     constructor(engine: Engine, x: number, y: number, lifetime: number);
     reset(lifetime: number): void;
-    update(): void;
+    update(frame: number): void;
 }
 declare class ParticleManager {
     particles: Particle[];
     constructor(game: Game);
     getFirstDead(): Particle;
     spawn(x: number, y: number, speedX: number, speedY: number, lifetime: number): void;
-    update(): void;
+    update(frame: number): void;
+}
+declare const ENEMY_TYPE_UFO = 0;
+declare class Enemy extends GameObject {
+    type: number;
+    frame: number;
+    animOffset: number;
+    attackVector: number[];
+    attackStep: number;
+    attackSubStep: number;
+    attackSpeed: number;
+    setFrame(frame: number): void;
+    constructor(engine: Engine);
+    spawn(type: number, attackVector: number[]): void;
+    update(frame: number): void;
+    takeDamage(amount: number): void;
+}
+declare const ATTACK_PATTERN: number[];
+declare class EnemyManager {
+    engine: Engine;
+    gameObjects: GameObject[];
+    enemies: Enemy[];
+    attackVectors: number[][];
+    time: number;
+    currentAttack: number;
+    constructor(engine: Engine, gameObjects: GameObject[]);
+    reset(): void;
+    update(player: Player): void;
+    getDeadEnemy(): Enemy;
+    spawn(type: number, attackVectorIndex: number): void;
 }
 declare class Starfield {
     stars: Sprite[];
@@ -92,6 +123,7 @@ declare class Starfield {
     constructor(game: Game);
     update(): void;
 }
+declare let globalGame: any;
 declare class Game {
     engine: Engine;
     logo: Logo;
@@ -100,7 +132,13 @@ declare class Game {
     bulletManager: BulletManager;
     starfield: Starfield;
     particles: ParticleManager;
+    enemyManager: EnemyManager;
     constructor(engine: Engine);
     initialize(): void;
+    speak(text: string): void;
     update(frame: number): void;
+    static spritesIntersect(a: Sprite, b: Sprite): boolean;
+    playShotSound(): void;
+    context: AudioContext;
+    tone(type: any, x: any): void;
 }
