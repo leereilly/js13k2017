@@ -37,30 +37,38 @@ declare class Engine {
     getWidth(): number;
     getHeight(): number;
     createSprite(x: number, y: number): Sprite;
+    bringSpriteToFront(sprite: Sprite): void;
+    bringSpriteToBack(sprite: Sprite): void;
 }
 declare class Logo {
     sprite: Sprite;
     constructor(engine: Engine);
+    setToRestart(): void;
     hide(): boolean;
     show(engine: Engine): void;
+    blendIn(): boolean;
 }
 declare class GameObject {
     sprite: Sprite;
     speed: Point;
     hp: number;
+    hideAfter: number;
     constructor(engine: Engine, x: number, y: number);
     update(frame: number): void;
-    kill(): void;
+    updateHideAfter(): void;
+    kill(hideAfter: number): void;
 }
 declare class Player extends GameObject {
     lastShotTime: number;
     breakBetweenShots: number;
     shots: number;
     engine: Engine;
+    spreadShots: boolean;
     constructor(engine: Engine, x: number, y: number);
     shoot(frame: number, bulletManager: BulletManager): void;
     update(frame: number): void;
     takeDamage(amount: number): void;
+    reset(): void;
 }
 declare class Bullet extends GameObject {
     lifetime: number;
@@ -74,10 +82,13 @@ declare class BulletManager {
     shoot(x: number, y: number, speedX: number, speedY: number, lifetime: number): void;
     update(frame: number, enemyManager: EnemyManager): void;
 }
+declare const PARTICLE_BLUE = 0;
+declare const PARTICLE_EXPLO = 1;
 declare class Particle extends GameObject {
     lifetime: number;
     maxLifetime: number;
     constructor(engine: Engine, x: number, y: number, lifetime: number);
+    setType(type: number): void;
     reset(lifetime: number): void;
     update(frame: number): void;
 }
@@ -85,12 +96,14 @@ declare class ParticleManager {
     particles: Particle[];
     constructor(game: Game);
     getFirstDead(): Particle;
-    spawn(x: number, y: number, speedX: number, speedY: number, lifetime: number): void;
+    spawn(x: number, y: number, speedX: number, speedY: number, lifetime: number, type: number): void;
     update(frame: number): void;
 }
 declare const ENEMY_TYPE_UFO = 0;
+declare const ENEMY_TYPE_UFO_BLUE = 1;
 declare class Enemy extends GameObject {
     type: number;
+    stop: boolean;
     frame: number;
     animOffset: number;
     attackVector: number[];
@@ -123,6 +136,22 @@ declare class Starfield {
     constructor(game: Game);
     update(): void;
 }
+declare class Explosion {
+    lifetime: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    intensity: number;
+    setData(lifetime: number, x: number, y: number, width: number, height: number, intensity: number): void;
+    update(particles: ParticleManager): void;
+}
+declare class ExplosionManager {
+    explosions: Explosion[];
+    explode(lifetime: number, x: number, y: number, width: number, height: number, intensity: number): void;
+    getFirstDead(): Explosion;
+    update(particles: ParticleManager): void;
+}
 declare let globalGame: any;
 declare class Game {
     engine: Engine;
@@ -133,12 +162,15 @@ declare class Game {
     starfield: Starfield;
     particles: ParticleManager;
     enemyManager: EnemyManager;
+    explosionManager: ExplosionManager;
+    context: AudioContext;
+    waitForSpaceKey: boolean;
+    showLogo: boolean;
     constructor(engine: Engine);
     initialize(): void;
     speak(text: string): void;
     update(frame: number): void;
     static spritesIntersect(a: Sprite, b: Sprite): boolean;
     playShotSound(): void;
-    context: AudioContext;
-    tone(type: any, x: any): void;
+    playExplosionSound(): void;
 }

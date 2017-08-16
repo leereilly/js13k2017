@@ -89,6 +89,14 @@ var Engine = (function () {
         this.sprites.push(result);
         return result;
     };
+    Engine.prototype.bringSpriteToFront = function (sprite) {
+        this.sprites.splice(this.sprites.indexOf(sprite), 1);
+        this.sprites.push(sprite);
+    };
+    Engine.prototype.bringSpriteToBack = function (sprite) {
+        this.sprites.splice(this.sprites.indexOf(sprite), 1);
+        this.sprites.unshift(sprite);
+    };
     return Engine;
 }());
 window.onload = function () {
@@ -107,6 +115,9 @@ var Logo = (function () {
         this.sprite.width = 10 * 64;
         this.sprite.height = 4 * 64;
     }
+    Logo.prototype.setToRestart = function () {
+        this.sprite.srcY = 8 * 64;
+    };
     Logo.prototype.hide = function () {
         if (window.location.href.indexOf("quick") > -1) {
             this.sprite.alpha = 0;
@@ -123,6 +134,15 @@ var Logo = (function () {
         this.sprite.scale = 1;
         this.sprite.pos.x = engine.getWidth() / 2;
         this.sprite.pos.y = engine.getHeight() / 2;
+        var index = engine.sprites.indexOf(this.sprite);
+        engine.bringSpriteToFront(this.sprite);
+    };
+    Logo.prototype.blendIn = function () {
+        this.sprite.alpha += 0.01;
+        if (this.sprite.alpha > 1) {
+            this.sprite.alpha = 1;
+        }
+        return this.sprite.alpha == 1;
     };
     return Logo;
 }());
@@ -135,9 +155,20 @@ var GameObject = (function () {
         this.sprite.pos.x += this.speed.x;
         this.sprite.pos.y += this.speed.y;
     };
-    GameObject.prototype.kill = function () {
-        this.sprite.visible = false;
+    GameObject.prototype.updateHideAfter = function () {
+        if (this.hideAfter > 0) {
+            this.hideAfter--;
+            if (this.hideAfter == 0) {
+                this.sprite.visible = false;
+            }
+        }
+    };
+    GameObject.prototype.kill = function (hideAfter) {
+        this.hideAfter = hideAfter;
         this.hp = 0;
+        if (hideAfter == 0) {
+            this.sprite.visible = false;
+        }
     };
     return GameObject;
 }());
@@ -154,6 +185,7 @@ var Player = (function (_super) {
         _this.lastShotTime = 0;
         _this.shots = 0;
         _this.hp = 1;
+        _this.reset();
         return _this;
     }
     Player.prototype.shoot = function (frame, bulletManager) {
@@ -163,11 +195,13 @@ var Player = (function (_super) {
         if (frame - this.lastShotTime > this.breakBetweenShots) {
             var speedY = 0;
             this.shots++;
-            if (this.shots % 3 == 0) {
-                speedY = 4;
-            }
-            if (this.shots % 3 == 1) {
-                speedY = -4;
+            if (this.spreadShots) {
+                if (this.shots % 3 == 0) {
+                    speedY = 4;
+                }
+                if (this.shots % 3 == 1) {
+                    speedY = -4;
+                }
             }
             bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, 25, speedY, 200);
             this.lastShotTime = frame;
@@ -193,10 +227,21 @@ var Player = (function (_super) {
         if (this.hp > 0) {
             this.hp -= amount;
             if (this.hp <= 0) {
-                this.kill();
+                this.kill(70);
+                this.sprite.visible = true; //do not hide dead player
+                this.engine.bringSpriteToBack(this.sprite);
+                globalGame.explosionManager.explode(70, this.sprite.pos.x, this.sprite.pos.y, 64 * 2, 64 * 2, 3);
                 globalGame.speak("hull integrity zero percent");
             }
         }
+    };
+    Player.prototype.reset = function () {
+        this.hp = 1;
+        this.sprite.visible = true;
+        this.sprite.pos.x = 100;
+        this.sprite.pos.y = this.engine.getHeight() / 2;
+        this.spreadShots = false;
+        this.breakBetweenShots = 20;
     };
     return Player;
 }(GameObject));
@@ -214,7 +259,7 @@ var Bullet = (function (_super) {
             this.lifetime--;
         }
         if (this.lifetime == 0) {
-            this.kill();
+            this.kill(0);
         }
     };
     return Bullet;
@@ -225,7 +270,7 @@ var BulletManager = (function () {
         for (var i = 0; i < 100; i++) {
             var b = new Bullet(game.engine, 0, 0);
             this.bullets.push(b);
-            b.kill();
+            b.kill(0);
         }
     }
     BulletManager.prototype.getFirstDead = function () {
@@ -259,8 +304,8 @@ var BulletManager = (function () {
                     if (e.hp > 0) {
                         if (Game.spritesIntersect(b.sprite, e.sprite)) {
                             e.takeDamage(1);
-                            b.kill();
-                            if (Math.random() < 0.2) {
+                            b.kill(0);
+                            if (Math.random() < 0.025) {
                                 var x = Math.floor(Math.random() * 5);
                                 switch (x) {
                                     case 0:
@@ -288,17 +333,27 @@ var BulletManager = (function () {
     };
     return BulletManager;
 }());
+var PARTICLE_BLUE = 0;
+var PARTICLE_EXPLO = 1;
 var Particle = (function (_super) {
     __extends(Particle, _super);
     function Particle(engine, x, y, lifetime) {
         var _this = _super.call(this, engine, x, y) || this;
-        _this.sprite.srcX = 2 * 64;
-        _this.sprite.srcY = 64;
         _this.sprite.width = 64;
         _this.sprite.height = 64;
         _this.reset(lifetime);
         return _this;
     }
+    Particle.prototype.setType = function (type) {
+        if (type == PARTICLE_BLUE) {
+            this.sprite.srcX = 2 * 64;
+            this.sprite.srcY = 64;
+        }
+        if (type == PARTICLE_EXPLO) {
+            this.sprite.srcX = 6 * 64;
+            this.sprite.srcY = 64;
+        }
+    };
     Particle.prototype.reset = function (lifetime) {
         this.lifetime = lifetime;
         this.maxLifetime = lifetime;
@@ -310,7 +365,7 @@ var Particle = (function (_super) {
         _super.prototype.update.call(this, frame);
         this.lifetime--;
         if (this.lifetime < 0) {
-            this.kill();
+            this.kill(0);
         }
         else {
             this.sprite.alpha = this.lifetime / this.maxLifetime;
@@ -321,10 +376,10 @@ var Particle = (function (_super) {
 var ParticleManager = (function () {
     function ParticleManager(game) {
         this.particles = [];
-        for (var i = 0; i < 100; i++) {
+        for (var i = 0; i < 200; i++) {
             var b = new Particle(game.engine, 0, 0, 0);
             this.particles.push(b);
-            b.kill();
+            b.kill(0);
         }
     }
     ParticleManager.prototype.getFirstDead = function () {
@@ -336,7 +391,7 @@ var ParticleManager = (function () {
         }
         return null;
     };
-    ParticleManager.prototype.spawn = function (x, y, speedX, speedY, lifetime) {
+    ParticleManager.prototype.spawn = function (x, y, speedX, speedY, lifetime, type) {
         var p = this.getFirstDead();
         if (p != null) {
             p.reset(lifetime);
@@ -346,6 +401,7 @@ var ParticleManager = (function () {
             p.speed.y = speedY;
             p.hp = 1;
             p.sprite.visible = true;
+            p.setType(type);
         }
     };
     ParticleManager.prototype.update = function (frame) {
@@ -359,31 +415,45 @@ var ParticleManager = (function () {
     return ParticleManager;
 }());
 var ENEMY_TYPE_UFO = 0;
+var ENEMY_TYPE_UFO_BLUE = 1;
 var Enemy = (function (_super) {
     __extends(Enemy, _super);
     function Enemy(engine) {
         var _this = _super.call(this, engine, 0, 0) || this;
         _this.sprite.visible = false;
         _this.hp = 0;
-        if (_this.type == ENEMY_TYPE_UFO) {
-            _this.setFrame(0);
-        }
         _this.animOffset = Math.floor(Math.random() * 100);
         return _this;
     }
     Enemy.prototype.setFrame = function (frame) {
         this.frame = frame;
-        if (frame == 0) {
-            this.sprite.srcX = 4 * 64;
-            this.sprite.srcY = 0;
-            this.sprite.width = 2 * 64;
-            this.sprite.height = 64;
+        if (this.type == ENEMY_TYPE_UFO_BLUE) {
+            if (frame == 0) {
+                this.sprite.srcX = 7 * 64;
+                this.sprite.srcY = 0;
+                this.sprite.width = 2 * 64;
+                this.sprite.height = 64;
+            }
+            if (frame == 1) {
+                this.sprite.srcX = 7 * 64;
+                this.sprite.srcY = 64;
+                this.sprite.width = 2 * 64;
+                this.sprite.height = 64;
+            }
         }
-        if (frame == 1) {
-            this.sprite.srcX = 4 * 64;
-            this.sprite.srcY = 64;
-            this.sprite.width = 2 * 64;
-            this.sprite.height = 64;
+        if (this.type == ENEMY_TYPE_UFO) {
+            if (frame == 0) {
+                this.sprite.srcX = 4 * 64;
+                this.sprite.srcY = 0;
+                this.sprite.width = 2 * 64;
+                this.sprite.height = 64;
+            }
+            if (frame == 1) {
+                this.sprite.srcX = 4 * 64;
+                this.sprite.srcY = 64;
+                this.sprite.width = 2 * 64;
+                this.sprite.height = 64;
+            }
         }
     };
     Enemy.prototype.spawn = function (type, attackVector) {
@@ -398,15 +468,20 @@ var Enemy = (function (_super) {
         this.sprite.visible = true;
         this.sprite.pos.x = attackVector[0];
         this.sprite.pos.y = attackVector[1];
+        this.stop = false;
     };
     Enemy.prototype.update = function (frame) {
+        _super.prototype.update.call(this, frame);
+        if (this.stop) {
+            return;
+        }
         this.attackSubStep += this.attackSpeed;
         if (this.attackSubStep > 1) {
             this.attackSubStep = 0;
             this.attackStep++;
         }
         if (this.attackStep * 2 + 2 >= this.attackVector.length) {
-            this.kill();
+            this.kill(0);
         }
         //from
         var fx = this.attackVector[this.attackStep * 2];
@@ -416,7 +491,6 @@ var Enemy = (function (_super) {
         var ty = this.attackVector[this.attackStep * 2 + 3];
         this.sprite.pos.x = fx + (tx - fx) * this.attackSubStep;
         this.sprite.pos.y = fy + (ty - fy) * this.attackSubStep;
-        _super.prototype.update.call(this, frame);
         if ((frame + this.animOffset) % 10 == 0) {
             this.setFrame((this.frame + 1) % 2);
         }
@@ -424,39 +498,64 @@ var Enemy = (function (_super) {
     Enemy.prototype.takeDamage = function (amount) {
         this.hp -= amount;
         if (this.hp <= 0) {
-            this.kill();
+            this.kill(10);
+            globalGame.engine.bringSpriteToBack(this.sprite);
+            this.stop = true;
+            globalGame.explosionManager.explode(10, this.sprite.pos.x, this.sprite.pos.y, this.sprite.width, this.sprite.height, 2);
         }
     };
     return Enemy;
 }(GameObject));
 //time, type, attackvector
 var ATTACK_PATTERN = [
-    0, ENEMY_TYPE_UFO, 0,
-    30, ENEMY_TYPE_UFO, 0,
-    60, ENEMY_TYPE_UFO, 0,
-    200 + 0, ENEMY_TYPE_UFO, 1,
-    200 + 30, ENEMY_TYPE_UFO, 1,
-    200 + 60, ENEMY_TYPE_UFO, 1,
-    500 + 0, ENEMY_TYPE_UFO, 0,
-    500 + 30, ENEMY_TYPE_UFO, 0,
-    500 + 60, ENEMY_TYPE_UFO, 0,
+    100, ENEMY_TYPE_UFO, 2,
+    120, ENEMY_TYPE_UFO, 2,
+    140, ENEMY_TYPE_UFO_BLUE, 2,
+    300 + 0, ENEMY_TYPE_UFO, 4,
+    300 + 20, ENEMY_TYPE_UFO, 4,
+    300 + 40, ENEMY_TYPE_UFO_BLUE, 4,
+    500 + 0, ENEMY_TYPE_UFO, 3,
+    500 + 20, ENEMY_TYPE_UFO, 3,
+    500 + 40, ENEMY_TYPE_UFO_BLUE, 3,
+    700, ENEMY_TYPE_UFO, 2,
+    700, ENEMY_TYPE_UFO, 3,
+    700, ENEMY_TYPE_UFO_BLUE, 4,
+    900, ENEMY_TYPE_UFO, 2,
+    900, ENEMY_TYPE_UFO_BLUE, 3,
+    900, ENEMY_TYPE_UFO, 4,
+    1100, ENEMY_TYPE_UFO_BLUE, 2,
+    1100, ENEMY_TYPE_UFO, 3,
+    1100, ENEMY_TYPE_UFO, 4,
+    1300, ENEMY_TYPE_UFO, 0,
+    1330, ENEMY_TYPE_UFO, 0,
+    1360, ENEMY_TYPE_UFO_BLUE, 0,
+    1500 + 0, ENEMY_TYPE_UFO, 1,
+    1500 + 30, ENEMY_TYPE_UFO, 1,
+    1500 + 60, ENEMY_TYPE_UFO_BLUE, 1,
+    1700 + 0, ENEMY_TYPE_UFO, 0,
+    1700 + 30, ENEMY_TYPE_UFO, 0,
+    1700 + 60, ENEMY_TYPE_UFO_BLUE, 0,
 ];
 var EnemyManager = (function () {
     function EnemyManager(engine, gameObjects) {
-        this.currentAttack = 0;
         this.engine = engine;
         this.gameObjects = gameObjects;
         this.enemies = [];
         this.attackVectors = [];
-        this.attackVectors.push([1920, 100, 100, 540, 1820, 500, 100, 1080], //z
-        [1920, 980, 100, 540, 1820, 500, 100, 0]);
+        this.attackVectors.push(
+        /*  0*/ [1920, 100, 100, 540, 1820, 500, 100, 1080], //z
+        /*  1*/ [1920, 980, 100, 540, 1820, 500, 100, 0], //inverted z
+        /*  2*/ [1920, 100, 0, 100], //straight top
+        /*  3*/ [1920, 500, 0, 500], //straight center
+        /*  4*/ [1920, 950, 0, 950]);
         this.reset();
     }
     EnemyManager.prototype.reset = function () {
         this.time = 0;
+        this.currentAttack = 0;
         for (var _i = 0, _a = this.enemies; _i < _a.length; _i++) {
             var e = _a[_i];
-            e.kill();
+            e.kill(0);
         }
     };
     EnemyManager.prototype.update = function (player) {
@@ -475,6 +574,7 @@ var EnemyManager = (function () {
         for (var _i = 0, _a = this.enemies; _i < _a.length; _i++) {
             var e = _a[_i];
             e.update(this.time);
+            e.updateHideAfter();
             if (e.hp > 0) {
                 if (Game.spritesIntersect(e.sprite, player.sprite)) {
                     player.takeDamage(1);
@@ -526,6 +626,58 @@ var Starfield = (function () {
     };
     return Starfield;
 }());
+var Explosion = (function () {
+    function Explosion() {
+    }
+    Explosion.prototype.setData = function (lifetime, x, y, width, height, intensity) {
+        this.lifetime = lifetime;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.intensity = intensity;
+    };
+    Explosion.prototype.update = function (particles) {
+        if (this.lifetime < 0) {
+            return;
+        }
+        this.lifetime--;
+        for (var i = 0; i < this.intensity; i++) {
+            particles.spawn(this.x - this.width / 2 + Math.random() * this.width, this.y - this.height / 2 + Math.random() * this.height, 0, 0.1, 20, PARTICLE_EXPLO);
+        }
+    };
+    return Explosion;
+}());
+var ExplosionManager = (function () {
+    function ExplosionManager() {
+        this.explosions = [];
+    }
+    ExplosionManager.prototype.explode = function (lifetime, x, y, width, height, intensity) {
+        globalGame.playExplosionSound();
+        var e = this.getFirstDead();
+        if (e == null) {
+            e = new Explosion();
+            this.explosions.push(e);
+        }
+        e.setData(lifetime, x, y, width, height, intensity);
+    };
+    ExplosionManager.prototype.getFirstDead = function () {
+        for (var _i = 0, _a = this.explosions; _i < _a.length; _i++) {
+            var e = _a[_i];
+            if (e.lifetime <= 0) {
+                return e;
+            }
+        }
+        return null;
+    };
+    ExplosionManager.prototype.update = function (particles) {
+        for (var _i = 0, _a = this.explosions; _i < _a.length; _i++) {
+            var e = _a[_i];
+            e.update(particles);
+        }
+    };
+    return ExplosionManager;
+}());
 var globalGame = null;
 var Game = (function () {
     function Game(engine) {
@@ -535,14 +687,17 @@ var Game = (function () {
         this.starfield = new Starfield(this);
         this.particles = new ParticleManager(this);
         this.enemyManager = new EnemyManager(engine, this.gameObjects);
+        this.explosionManager = new ExplosionManager();
         globalGame = this;
+        this.waitForSpaceKey = false;
+        this.showLogo = false;
     }
     Game.prototype.initialize = function () {
         this.logo = new Logo(this.engine);
         this.logo.show(this.engine);
-        this.player = new Player(this.engine, 100, this.engine.getHeight() / 2);
+        this.player = new Player(this.engine, 0, 0);
         this.gameObjects.push(this.player);
-        this.speak('we are lost in space');
+        this.speak('lost in space');
     };
     Game.prototype.speak = function (text) {
         var msg = new SpeechSynthesisUtterance();
@@ -555,12 +710,38 @@ var Game = (function () {
     };
     Game.prototype.update = function (frame) {
         this.starfield.update();
+        this.explosionManager.update(this.particles);
         this.particles.update(frame);
+        for (var _i = 0, _a = this.gameObjects; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            obj.updateHideAfter();
+        }
         if (this.player.hp > 0) {
-            this.particles.spawn(this.player.sprite.pos.x - 50, this.player.sprite.pos.y, -1 - Math.random(), 0.8 - Math.random() * 1.6, 55);
+            this.particles.spawn(this.player.sprite.pos.x - 50, this.player.sprite.pos.y, -1 - Math.random(), 0.8 - Math.random() * 1.6, 55, PARTICLE_BLUE);
+        }
+        if (this.showLogo) {
+            if (!this.logo.blendIn()) {
+                return;
+            }
+            this.showLogo = false;
+            this.waitForSpaceKey = true;
+        }
+        if (this.waitForSpaceKey) {
+            if (this.engine.isKeyDown(KEY_SPACE)) {
+                this.waitForSpaceKey = false;
+                this.player.reset();
+                this.enemyManager.reset();
+            }
+            return;
         }
         if (!this.logo.hide()) {
             return;
+        }
+        if (this.player.hp <= 0) {
+            this.logo.show(this.engine);
+            this.logo.sprite.alpha = 0;
+            this.logo.setToRestart();
+            this.showLogo = true;
         }
         this.enemyManager.update(this.player);
         //input
@@ -582,8 +763,8 @@ var Game = (function () {
         //dampening
         this.player.speed.y *= 0.9;
         this.player.speed.x *= 0.9;
-        for (var _i = 0, _a = this.gameObjects; _i < _a.length; _i++) {
-            var obj = _a[_i];
+        for (var _b = 0, _c = this.gameObjects; _b < _c.length; _b++) {
+            var obj = _c[_b];
             obj.update(frame);
         }
         this.bulletManager.update(frame, this.enemyManager);
@@ -592,21 +773,34 @@ var Game = (function () {
         return (a.pos.x + a.width - 1 >= b.pos.x && a.pos.x <= b.pos.x + b.width - 1 && a.pos.y + a.height - 1 >= b.pos.y && a.pos.y <= b.pos.y + b.height - 1);
     };
     Game.prototype.playShotSound = function () {
-        this.tone("sine", 1.5);
-    };
-    Game.prototype.tone = function (type, x) {
         if (this.context == null) {
             this.context = new AudioContext();
         }
         var o = this.context.createOscillator();
         var g = this.context.createGain();
         o.connect(g);
-        o.type = type;
+        o.type = "sine";
         g.connect(this.context.destination);
-        o.frequency.value = 240;
+        o.frequency.value = 1040;
+        o.frequency.linearRampToValueAtTime(240, this.context.currentTime + 0.2);
+        o.start(0);
+        g.gain.value = 0.1;
+        g.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + 0.4);
+    };
+    Game.prototype.playExplosionSound = function () {
+        if (this.context == null) {
+            this.context = new AudioContext();
+        }
+        var o = this.context.createOscillator();
+        var g = this.context.createGain();
+        o.connect(g);
+        o.type = "sawtooth";
+        g.connect(this.context.destination);
+        o.frequency.value = 340;
+        o.frequency.linearRampToValueAtTime(10, this.context.currentTime + 0.2);
         o.start(0);
         g.gain.value = 0.2;
-        g.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + x);
+        g.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + 0.4);
     };
     return Game;
 }());
