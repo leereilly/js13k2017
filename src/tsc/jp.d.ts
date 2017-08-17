@@ -3,6 +3,9 @@ declare const KEY_UP = 38;
 declare const KEY_RIGHT = 39;
 declare const KEY_DOWN = 40;
 declare const KEY_SPACE = 32;
+declare const REPLACE_R = 153;
+declare const REPLACE_G = 153;
+declare const REPLACE_B = 153;
 declare class Point {
     x: number;
     y: number;
@@ -39,6 +42,7 @@ declare class Engine {
     createSprite(x: number, y: number): Sprite;
     bringSpriteToFront(sprite: Sprite): void;
     bringSpriteToBack(sprite: Sprite): void;
+    private recolorCopy(canvas, x, y, w, h, colors);
 }
 declare class Logo {
     sprite: Sprite;
@@ -64,11 +68,21 @@ declare class Player extends GameObject {
     shots: number;
     engine: Engine;
     spreadShots: boolean;
+    shieldSprite: Sprite;
+    shield: boolean;
+    weaponUpgrade: number;
+    speedUpgrade: number;
+    shotsPerShot: number;
+    backShotsPerShot: number;
+    points: number;
     constructor(engine: Engine, x: number, y: number);
     shoot(frame: number, bulletManager: BulletManager): void;
     update(frame: number): void;
-    takeDamage(amount: number): void;
+    takeDamage(amount: number): boolean;
     reset(): void;
+    upgradeWeapon(): void;
+    upgradeShield(): void;
+    upgradeSpeed(): void;
 }
 declare class Bullet extends GameObject {
     lifetime: number;
@@ -152,7 +166,24 @@ declare class ExplosionManager {
     getFirstDead(): Explosion;
     update(particles: ParticleManager): void;
 }
-declare let globalGame: any;
+declare let globalGame: Game;
+declare const GOODIE_WEAPON = 0;
+declare const GOODIE_SPEED = 1;
+declare const GOODIE_SHIELD = 2;
+declare class Goodie extends Sprite {
+    type: number;
+}
+declare class GoodieManager {
+    goodies: Goodie[];
+    goodieCount: number;
+    constructor();
+    reset(): void;
+    update(frame: number, player: Player): void;
+    getFirstDead(): Goodie;
+    setFrame(g: Sprite, frame: number): void;
+    spawn(x: any, y: any, type: any): void;
+    dropGoodie(enemyType: number, x: number, y: number): void;
+}
 declare class Game {
     engine: Engine;
     logo: Logo;
@@ -164,6 +195,7 @@ declare class Game {
     enemyManager: EnemyManager;
     explosionManager: ExplosionManager;
     context: AudioContext;
+    goodieManager: GoodieManager;
     waitForSpaceKey: boolean;
     showLogo: boolean;
     constructor(engine: Engine);

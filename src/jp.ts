@@ -1,10 +1,18 @@
+//svg: http://www.svgminify.com/
+//js: http://esprima.org/demo/minify.html
+//Size zip stand 16.8. 9kb (mit minify und normal rar zip)
+
 const KEY_LEFT = 37;
 const KEY_UP = 38;
 const KEY_RIGHT = 39;
 const KEY_DOWN = 40;
 
-
 const KEY_SPACE = 32;
+
+const REPLACE_R = 153;
+const REPLACE_G = 153;
+const REPLACE_B = 153;
+
 
 class Point {
     x: number;
@@ -64,6 +72,14 @@ class Engine {
         this.drawCanvasCtx = drawCanvas.getContext("2d");
         this.sprites = [];
         this.trackedKeys = [];
+
+        //recolor copy sprites on the sprite sheet
+        //blue ufo
+        this.recolorCopy(this.spriteCanvasCtx, 4 * 64, 0, 64 * 2, 64 * 4, [{r: 85, g: 153, b: 255} ]);
+        //goodies
+        //yellow, blue, green
+        this.recolorCopy(this.spriteCanvasCtx, 7 * 64, 0, 64, 64, [{r: 255, g: 204, b: 0}, {r: 42, g: 170, b: 255}, {r: 0, g: 190, b: 0}]);
+
 
         document.onkeydown = this.keyDown.bind(this);
         document.onkeyup = this.keyUp.bind(this);
@@ -127,6 +143,21 @@ class Engine {
         this.sprites.splice(this.sprites.indexOf(sprite), 1);
         this.sprites.unshift(sprite);
     }
+
+    private recolorCopy(canvas: CanvasRenderingContext2D, x, y, w, h, colors) {
+        for (let j = 0; j < colors.length; j++) {
+            let data = canvas.getImageData(x, y, w, h);
+            for (let i = 0; i < data.data.length; i += 4) {
+                if (data.data[i] === REPLACE_R && data.data[i + 1] === REPLACE_G && data.data[i + 2] === REPLACE_B) {
+                    data.data[i] = colors[j].r;
+                    data.data[i + 1] = colors[j].g;
+                    data.data[i + 2] = colors[j].b;
+                }
+            }
+            canvas.putImageData(data, x, y + h * (j + 1));
+        }
+    }
+
 
 }
 
@@ -229,6 +260,14 @@ class Player extends GameObject {
     shots: number;
     engine: Engine;
     spreadShots: boolean;
+    shieldSprite: Sprite;
+
+    shield: boolean;
+    weaponUpgrade: number;
+    speedUpgrade: number;
+    shotsPerShot: number;
+    backShotsPerShot: number;
+    points: number;
 
     constructor(engine: Engine, x: number, y: number) {
         super(engine, x, y);
@@ -244,6 +283,13 @@ class Player extends GameObject {
 
         this.hp = 1;
         this.reset();
+        this.shieldSprite = new Sprite(0, 0);
+        this.shieldSprite.visible = false;
+        this.engine.sprites.push(this.shieldSprite);
+        this.shieldSprite.srcX = 0;
+        this.shieldSprite.srcY = 2 * 64;
+        this.shieldSprite.width = 3 * 64;
+        this.shieldSprite.height = 3 * 64;
     }
 
     shoot(frame: number, bulletManager: BulletManager) {
@@ -251,19 +297,32 @@ class Player extends GameObject {
             return;
         }
         if (frame - this.lastShotTime > this.breakBetweenShots) {
-            let speedY = 0;
-            this.shots++;
-
-            if (this.spreadShots) {
-                if (this.shots % 3 == 0) {
-                    speedY = 4;
+            for (let i = 0; i < this.shotsPerShot; i++) {
+                let speedY = 0;
+                this.shots++;
+                if (this.spreadShots) {
+                    if (this.shots % 3 == 0) {
+                        speedY = 4;
+                    }
+                    if (this.shots % 3 == 1) {
+                        speedY = -4;
+                    }
                 }
-                if (this.shots % 3 == 1) {
-                    speedY = -4;
-                }
+                bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, 25, speedY, 200);
             }
-
-            bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, 25, speedY, 200);
+            for (let i =0 ; i < this.backShotsPerShot; i++) {
+                let speedY = 0;
+                this.shots++;
+                if (this.spreadShots) {
+                    if (this.shots % 3 == 0) {
+                        speedY = 4;
+                    }
+                    if (this.shots % 3 == 1) {
+                        speedY = -4;
+                    }
+                }
+                bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, -25, speedY, 200);
+            }
             this.lastShotTime = frame;
             globalGame.playShotSound();
         }
@@ -272,6 +331,10 @@ class Player extends GameObject {
 
     update(frame: number) {
         super.update(frame);
+        this.shieldSprite.pos.x = this.sprite.pos.x;
+        this.shieldSprite.pos.y = this.sprite.pos.y;
+        this.shieldSprite.visible = this.shield;
+        this.shieldSprite.alpha = 0.75 + Math.sin(frame/10.0) * 0.25;
         if (this.sprite.pos.x > this.engine.getWidth() - this.sprite.width / 2) {
             this.sprite.pos.x = this.engine.getWidth() - this.sprite.width / 2;
         }
@@ -289,6 +352,11 @@ class Player extends GameObject {
     }
 
     takeDamage(amount: number) {
+        if (this.shield) {
+            this.shield = false;
+            globalGame.speak("shield lost");
+            return true;
+        }
         if (this.hp > 0) {
             this.hp -= amount;
             if (this.hp <= 0) {
@@ -296,9 +364,10 @@ class Player extends GameObject {
                 this.sprite.visible = true; //do not hide dead player
                 this.engine.bringSpriteToBack(this.sprite);
                 globalGame.explosionManager.explode(70, this.sprite.pos.x, this.sprite.pos.y, 64 * 2, 64 * 2, 3);
-                globalGame.speak("hull integrity zero percent")
+                globalGame.speak("hull integrity zero percent");
             }
         }
+        return false;
     }
 
     reset() {
@@ -308,6 +377,77 @@ class Player extends GameObject {
         this.sprite.pos.y = this.engine.getHeight() / 2;
         this.spreadShots = false;
         this.breakBetweenShots = 20;
+        this.shield = false;
+        this.weaponUpgrade = 0;
+        this.speedUpgrade = 0;
+        this.shotsPerShot = 1;
+        this.backShotsPerShot = 0;
+        this.points = 0;
+    }
+
+    upgradeWeapon() {
+        this.weaponUpgrade += 1;
+        this.points += 50;
+
+        if (this.weaponUpgrade <= 10 ) {
+            globalGame.speak("weapon systems improved!");
+        }
+
+        if (this.weaponUpgrade == 1) {
+            this.breakBetweenShots = 16;
+        }
+        if (this.weaponUpgrade == 2) {
+            this.breakBetweenShots = 13;
+        }
+        if (this.weaponUpgrade == 3) {
+            this.spreadShots = true;
+        }
+        if (this.weaponUpgrade == 3) {
+            this.breakBetweenShots = 10;
+        }
+
+        if (this.weaponUpgrade == 4) {
+            this.backShotsPerShot = 1;
+        }
+
+        if (this.weaponUpgrade == 5) {
+            this.shotsPerShot = 2;
+        }
+
+        if (this.weaponUpgrade == 6) {
+            this.backShotsPerShot = 2;
+        }
+
+        if (this.weaponUpgrade == 7) {
+            this.shotsPerShot = 3;
+        }
+
+        if (this.weaponUpgrade == 8) {
+            this.backShotsPerShot = 3;
+        }
+
+        if (this.weaponUpgrade == 9) {
+            this.breakBetweenShots = 8;
+        }
+
+        if (this.weaponUpgrade == 10) {
+            this.breakBetweenShots = 9;
+        }
+
+    }
+
+    upgradeShield() {
+        this.points += 50;
+        if (!this.shield) {
+            globalGame.speak("shield activated!");
+        }
+        this.shield = true;
+    }
+
+    upgradeSpeed() {
+        this.points += 50;
+        globalGame.speak("speed increased!");
+        this.speedUpgrade += 0.1;
     }
 }
 
@@ -337,8 +477,7 @@ class BulletManager {
 
     constructor(game: Game) {
         this.bullets = [];
-
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 200; i++) {
             let b = new Bullet(game.engine, 0, 0);
             this.bullets.push(b);
             b.kill(0);
@@ -375,24 +514,28 @@ class BulletManager {
                     if (e.hp > 0) {
                         if (Game.spritesIntersect(b.sprite, e.sprite)) {
                             e.takeDamage(1);
+                            if (e.hp <= 0) {
+                                globalGame.goodieManager.dropGoodie(e.type, e.sprite.pos.x, e.sprite.pos.y);
+                            }
                             b.kill(0);
+                            globalGame.player.points += 10;
                             if (Math.random() < 0.025) {
                                 let x = Math.floor(Math.random() * 5);
                                 switch (x) {
                                     case 0:
-                                        globalGame.speak("nice shot")
+                                        globalGame.speak("nice shot");
                                         break;
                                     case 1:
-                                        globalGame.speak("clean kill")
+                                        globalGame.speak("clean kill");
                                         break;
                                     case 2:
-                                        globalGame.speak("target destroyed")
+                                        globalGame.speak("target destroyed");
                                         break;
                                     case 3:
-                                        globalGame.speak("impressive targeting")
+                                        globalGame.speak("impressive targeting");
                                         break;
                                     case 4:
-                                        globalGame.speak("outstanding aim")
+                                        globalGame.speak("outstanding aim");
                                         break;
                                 }
 
@@ -513,32 +656,20 @@ class Enemy extends GameObject {
 
     setFrame(frame: number) {
         this.frame = frame;
-
-        if (this.type == ENEMY_TYPE_UFO_BLUE) {
-            if (frame == 0) {
-                this.sprite.srcX = 7 * 64;
-                this.sprite.srcY = 0;
-                this.sprite.width = 2 * 64;
-                this.sprite.height = 64;
+        if (this.type == ENEMY_TYPE_UFO_BLUE || this.type == ENEMY_TYPE_UFO) {
+            let offset = 0;
+            if (this.type == ENEMY_TYPE_UFO_BLUE) {
+                offset = 4 * 64;
             }
-            if (frame == 1) {
-                this.sprite.srcX = 7 * 64;
-                this.sprite.srcY = 64;
-                this.sprite.width = 2 * 64;
-                this.sprite.height = 64;
-            }
-        }
-
-        if (this.type == ENEMY_TYPE_UFO) {
             if (frame == 0) {
                 this.sprite.srcX = 4 * 64;
-                this.sprite.srcY = 0;
+                this.sprite.srcY = offset;
                 this.sprite.width = 2 * 64;
                 this.sprite.height = 64;
             }
             if (frame == 1) {
                 this.sprite.srcX = 4 * 64;
-                this.sprite.srcY = 64;
+                this.sprite.srcY = offset + 64;
                 this.sprite.width = 2 * 64;
                 this.sprite.height = 64;
             }
@@ -628,10 +759,10 @@ const ATTACK_PATTERN = [
     700, ENEMY_TYPE_UFO_BLUE, 4,
     900, ENEMY_TYPE_UFO, 2,
     900, ENEMY_TYPE_UFO_BLUE, 3,
-    900 , ENEMY_TYPE_UFO, 4,
-    1100 , ENEMY_TYPE_UFO_BLUE, 2,
-    1100 , ENEMY_TYPE_UFO, 3,
-    1100 , ENEMY_TYPE_UFO, 4,
+    900, ENEMY_TYPE_UFO, 4,
+    1100, ENEMY_TYPE_UFO_BLUE, 2,
+    1100, ENEMY_TYPE_UFO, 3,
+    1100, ENEMY_TYPE_UFO, 4,
     1300, ENEMY_TYPE_UFO, 0,
     1330, ENEMY_TYPE_UFO, 0,
     1360, ENEMY_TYPE_UFO_BLUE, 0,
@@ -695,7 +826,9 @@ class EnemyManager {
             e.updateHideAfter();
             if (e.hp > 0) {
                 if (Game.spritesIntersect(e.sprite, player.sprite)) {
-                    player.takeDamage(1);
+                    if (player.takeDamage(1)) {
+                        e.takeDamage(1);
+                    }
                 }
             }
         }
@@ -772,7 +905,7 @@ class Explosion {
         }
         this.lifetime--;
         for (let i = 0; i < this.intensity; i++) {
-            particles.spawn(this.x - this.width/2 + Math.random() * this.width, this.y - this.height/2 + Math.random() * this.height, 0, 0.1, 20, PARTICLE_EXPLO);
+            particles.spawn(this.x - this.width / 2 + Math.random() * this.width, this.y - this.height / 2 + Math.random() * this.height, 0, 0.1, 20, PARTICLE_EXPLO);
         }
     }
 }
@@ -806,7 +939,105 @@ class ExplosionManager {
     }
 }
 
-let globalGame = null;
+let globalGame: Game = null;
+
+
+const GOODIE_WEAPON = 0;
+const GOODIE_SPEED = 1;
+const GOODIE_SHIELD = 2;
+
+class Goodie extends Sprite {
+    type: number;
+}
+
+class GoodieManager {
+    goodies: Goodie[];
+    goodieCount: number;
+
+
+    constructor() {
+        this.goodies = [];
+        this.reset();
+    }
+
+    reset() {
+        this.goodieCount = 0;
+        for (let g of this.goodies) {
+            g.visible = false;
+        }
+    }
+
+    update(frame: number, player: Player) {
+        for (let g of this.goodies) {
+            if (g.visible) {
+                g.pos.x -= 3;
+                if (frame % 15 == 0) {
+                    if (frame % 30 == 0) {
+                        this.setFrame(g, g.type + 1);
+                    } else {
+                        this.setFrame(g, 0);
+                    }
+                }
+                if (Game.spritesIntersect(player.sprite, g)) {
+                    g.visible = false;
+                    if (g.type == GOODIE_WEAPON) {
+                        player.upgradeWeapon();
+                    }
+                    if (g.type == GOODIE_SHIELD) {
+                        player.upgradeShield();
+                    }
+                    if (g.type == GOODIE_SPEED) {
+                        player.upgradeSpeed();
+                    }
+                }
+            }
+        }
+    }
+
+    getFirstDead(): Goodie {
+        for (let g of this.goodies) {
+            if (!g.visible) {
+                return g;
+            }
+        }
+        return null;
+    }
+
+    setFrame(g: Sprite, frame: number) {
+        g.srcX = 7 * 64;
+        g.srcY = frame * 64;
+    }
+
+    spawn(x, y, type) {
+        if (globalGame.player.shield) {
+            if (type == GOODIE_SHIELD) {
+                type = GOODIE_SPEED;
+            }
+        }
+        let g = this.getFirstDead();
+        if (g == null) {
+            g = new Goodie(x, y);
+            this.goodies.push(g);
+            globalGame.engine.sprites.push(g);
+            g.width = 64;
+            g.height = 64;
+        }
+        g.visible = true;
+        g.pos.x = x;
+        g.pos.y = y;
+        g.type = type;
+        this.setFrame(g, 0);
+    }
+
+
+    dropGoodie(enemyType: number, x: number, y: number) {
+        if (enemyType == ENEMY_TYPE_UFO_BLUE) {
+            this.goodieCount++;
+            //todo different goodies!
+            this.spawn(x, y, this.goodieCount % 3);
+        }
+    }
+}
 
 class Game {
     engine: Engine;
@@ -819,6 +1050,7 @@ class Game {
     enemyManager: EnemyManager;
     explosionManager: ExplosionManager;
     context: AudioContext;
+    goodieManager: GoodieManager;
 
     waitForSpaceKey: boolean;
     showLogo: boolean;
@@ -831,6 +1063,7 @@ class Game {
         this.particles = new ParticleManager(this);
         this.enemyManager = new EnemyManager(engine, this.gameObjects);
         this.explosionManager = new ExplosionManager();
+        this.goodieManager = new GoodieManager();
 
         globalGame = this;
         this.waitForSpaceKey = false;
@@ -860,6 +1093,7 @@ class Game {
         this.starfield.update();
         this.explosionManager.update(this.particles);
         this.particles.update(frame);
+        this.goodieManager.update(frame, this.player);
 
         for (let obj of this.gameObjects) {
             obj.updateHideAfter();
@@ -883,6 +1117,7 @@ class Game {
                 this.waitForSpaceKey = false;
                 this.player.reset();
                 this.enemyManager.reset();
+                this.goodieManager.reset();
             }
             return;
         }
@@ -902,16 +1137,16 @@ class Game {
 
         //input
         if (this.engine.isKeyDown(KEY_DOWN)) {
-            this.player.speed.y += 1;
+            this.player.speed.y += 1 + this.player.speedUpgrade;
         }
         if (this.engine.isKeyDown(KEY_UP)) {
-            this.player.speed.y -= 1;
+            this.player.speed.y -= 1 + this.player.speedUpgrade;
         }
         if (this.engine.isKeyDown(KEY_LEFT)) {
-            this.player.speed.x -= 1;
+            this.player.speed.x -= 1 + this.player.speedUpgrade;
         }
         if (this.engine.isKeyDown(KEY_RIGHT)) {
-            this.player.speed.x += 1;
+            this.player.speed.x += 1 + this.player.speedUpgrade;
         }
         if (this.engine.isKeyDown(KEY_SPACE)) {
             this.player.shoot(frame, this.bulletManager);
@@ -947,6 +1182,8 @@ class Game {
         o.start(0);
         g.gain.value = 0.1;
         g.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + 0.4);
+
+        o.stop(this.context.currentTime + 0.5);
     }
 
     playExplosionSound() {
@@ -966,7 +1203,8 @@ class Game {
         o.start(0);
         g.gain.value = 0.2;
         g.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + 0.4);
-    }
 
+        o.stop(this.context.currentTime + 0.5);
+    }
 }
 

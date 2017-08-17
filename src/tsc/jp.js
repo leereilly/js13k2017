@@ -1,3 +1,6 @@
+//svg: http://www.svgminify.com/
+//js: http://esprima.org/demo/minify.html
+//Size zip stand 16.8. 9kb (mit minify und normal rar zip)
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -13,6 +16,9 @@ var KEY_UP = 38;
 var KEY_RIGHT = 39;
 var KEY_DOWN = 40;
 var KEY_SPACE = 32;
+var REPLACE_R = 153;
+var REPLACE_G = 153;
+var REPLACE_B = 153;
 var Point = (function () {
     function Point(x, y) {
         this.x = x;
@@ -49,6 +55,12 @@ var Engine = (function () {
         this.drawCanvasCtx = drawCanvas.getContext("2d");
         this.sprites = [];
         this.trackedKeys = [];
+        //recolor copy sprites on the sprite sheet
+        //blue ufo
+        this.recolorCopy(this.spriteCanvasCtx, 4 * 64, 0, 64 * 2, 64 * 4, [{ r: 85, g: 153, b: 255 }]);
+        //goodies
+        //yellow, blue, green
+        this.recolorCopy(this.spriteCanvasCtx, 7 * 64, 0, 64, 64, [{ r: 255, g: 204, b: 0 }, { r: 42, g: 170, b: 255 }, { r: 0, g: 190, b: 0 }]);
         document.onkeydown = this.keyDown.bind(this);
         document.onkeyup = this.keyUp.bind(this);
         this.game = new Game(this);
@@ -96,6 +108,19 @@ var Engine = (function () {
     Engine.prototype.bringSpriteToBack = function (sprite) {
         this.sprites.splice(this.sprites.indexOf(sprite), 1);
         this.sprites.unshift(sprite);
+    };
+    Engine.prototype.recolorCopy = function (canvas, x, y, w, h, colors) {
+        for (var j = 0; j < colors.length; j++) {
+            var data = canvas.getImageData(x, y, w, h);
+            for (var i = 0; i < data.data.length; i += 4) {
+                if (data.data[i] === REPLACE_R && data.data[i + 1] === REPLACE_G && data.data[i + 2] === REPLACE_B) {
+                    data.data[i] = colors[j].r;
+                    data.data[i + 1] = colors[j].g;
+                    data.data[i + 2] = colors[j].b;
+                }
+            }
+            canvas.putImageData(data, x, y + h * (j + 1));
+        }
     };
     return Engine;
 }());
@@ -186,6 +211,13 @@ var Player = (function (_super) {
         _this.shots = 0;
         _this.hp = 1;
         _this.reset();
+        _this.shieldSprite = new Sprite(0, 0);
+        _this.shieldSprite.visible = false;
+        _this.engine.sprites.push(_this.shieldSprite);
+        _this.shieldSprite.srcX = 0;
+        _this.shieldSprite.srcY = 2 * 64;
+        _this.shieldSprite.width = 3 * 64;
+        _this.shieldSprite.height = 3 * 64;
         return _this;
     }
     Player.prototype.shoot = function (frame, bulletManager) {
@@ -193,23 +225,42 @@ var Player = (function (_super) {
             return;
         }
         if (frame - this.lastShotTime > this.breakBetweenShots) {
-            var speedY = 0;
-            this.shots++;
-            if (this.spreadShots) {
-                if (this.shots % 3 == 0) {
-                    speedY = 4;
+            for (var i = 0; i < this.shotsPerShot; i++) {
+                var speedY = 0;
+                this.shots++;
+                if (this.spreadShots) {
+                    if (this.shots % 3 == 0) {
+                        speedY = 4;
+                    }
+                    if (this.shots % 3 == 1) {
+                        speedY = -4;
+                    }
                 }
-                if (this.shots % 3 == 1) {
-                    speedY = -4;
-                }
+                bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, 25, speedY, 200);
             }
-            bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, 25, speedY, 200);
+            for (var i = 0; i < this.backShotsPerShot; i++) {
+                var speedY = 0;
+                this.shots++;
+                if (this.spreadShots) {
+                    if (this.shots % 3 == 0) {
+                        speedY = 4;
+                    }
+                    if (this.shots % 3 == 1) {
+                        speedY = -4;
+                    }
+                }
+                bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, -25, speedY, 200);
+            }
             this.lastShotTime = frame;
             globalGame.playShotSound();
         }
     };
     Player.prototype.update = function (frame) {
         _super.prototype.update.call(this, frame);
+        this.shieldSprite.pos.x = this.sprite.pos.x;
+        this.shieldSprite.pos.y = this.sprite.pos.y;
+        this.shieldSprite.visible = this.shield;
+        this.shieldSprite.alpha = 0.75 + Math.sin(frame / 10.0) * 0.25;
         if (this.sprite.pos.x > this.engine.getWidth() - this.sprite.width / 2) {
             this.sprite.pos.x = this.engine.getWidth() - this.sprite.width / 2;
         }
@@ -224,6 +275,11 @@ var Player = (function (_super) {
         }
     };
     Player.prototype.takeDamage = function (amount) {
+        if (this.shield) {
+            this.shield = false;
+            globalGame.speak("shield lost");
+            return true;
+        }
         if (this.hp > 0) {
             this.hp -= amount;
             if (this.hp <= 0) {
@@ -234,6 +290,7 @@ var Player = (function (_super) {
                 globalGame.speak("hull integrity zero percent");
             }
         }
+        return false;
     };
     Player.prototype.reset = function () {
         this.hp = 1;
@@ -242,6 +299,64 @@ var Player = (function (_super) {
         this.sprite.pos.y = this.engine.getHeight() / 2;
         this.spreadShots = false;
         this.breakBetweenShots = 20;
+        this.shield = false;
+        this.weaponUpgrade = 0;
+        this.speedUpgrade = 0;
+        this.shotsPerShot = 1;
+        this.backShotsPerShot = 0;
+        this.points = 0;
+    };
+    Player.prototype.upgradeWeapon = function () {
+        this.weaponUpgrade += 1;
+        this.points += 50;
+        if (this.weaponUpgrade <= 10) {
+            globalGame.speak("weapon systems improved!");
+        }
+        if (this.weaponUpgrade == 1) {
+            this.breakBetweenShots = 16;
+        }
+        if (this.weaponUpgrade == 2) {
+            this.breakBetweenShots = 13;
+        }
+        if (this.weaponUpgrade == 3) {
+            this.spreadShots = true;
+        }
+        if (this.weaponUpgrade == 3) {
+            this.breakBetweenShots = 10;
+        }
+        if (this.weaponUpgrade == 4) {
+            this.backShotsPerShot = 1;
+        }
+        if (this.weaponUpgrade == 5) {
+            this.shotsPerShot = 2;
+        }
+        if (this.weaponUpgrade == 6) {
+            this.backShotsPerShot = 2;
+        }
+        if (this.weaponUpgrade == 7) {
+            this.shotsPerShot = 3;
+        }
+        if (this.weaponUpgrade == 8) {
+            this.backShotsPerShot = 3;
+        }
+        if (this.weaponUpgrade == 9) {
+            this.breakBetweenShots = 8;
+        }
+        if (this.weaponUpgrade == 10) {
+            this.breakBetweenShots = 9;
+        }
+    };
+    Player.prototype.upgradeShield = function () {
+        this.points += 50;
+        if (!this.shield) {
+            globalGame.speak("shield activated!");
+        }
+        this.shield = true;
+    };
+    Player.prototype.upgradeSpeed = function () {
+        this.points += 50;
+        globalGame.speak("speed increased!");
+        this.speedUpgrade += 0.1;
     };
     return Player;
 }(GameObject));
@@ -267,7 +382,7 @@ var Bullet = (function (_super) {
 var BulletManager = (function () {
     function BulletManager(game) {
         this.bullets = [];
-        for (var i = 0; i < 100; i++) {
+        for (var i = 0; i < 200; i++) {
             var b = new Bullet(game.engine, 0, 0);
             this.bullets.push(b);
             b.kill(0);
@@ -304,7 +419,11 @@ var BulletManager = (function () {
                     if (e.hp > 0) {
                         if (Game.spritesIntersect(b.sprite, e.sprite)) {
                             e.takeDamage(1);
+                            if (e.hp <= 0) {
+                                globalGame.goodieManager.dropGoodie(e.type, e.sprite.pos.x, e.sprite.pos.y);
+                            }
                             b.kill(0);
+                            globalGame.player.points += 10;
                             if (Math.random() < 0.025) {
                                 var x = Math.floor(Math.random() * 5);
                                 switch (x) {
@@ -427,30 +546,20 @@ var Enemy = (function (_super) {
     }
     Enemy.prototype.setFrame = function (frame) {
         this.frame = frame;
-        if (this.type == ENEMY_TYPE_UFO_BLUE) {
-            if (frame == 0) {
-                this.sprite.srcX = 7 * 64;
-                this.sprite.srcY = 0;
-                this.sprite.width = 2 * 64;
-                this.sprite.height = 64;
+        if (this.type == ENEMY_TYPE_UFO_BLUE || this.type == ENEMY_TYPE_UFO) {
+            var offset = 0;
+            if (this.type == ENEMY_TYPE_UFO_BLUE) {
+                offset = 4 * 64;
             }
-            if (frame == 1) {
-                this.sprite.srcX = 7 * 64;
-                this.sprite.srcY = 64;
-                this.sprite.width = 2 * 64;
-                this.sprite.height = 64;
-            }
-        }
-        if (this.type == ENEMY_TYPE_UFO) {
             if (frame == 0) {
                 this.sprite.srcX = 4 * 64;
-                this.sprite.srcY = 0;
+                this.sprite.srcY = offset;
                 this.sprite.width = 2 * 64;
                 this.sprite.height = 64;
             }
             if (frame == 1) {
                 this.sprite.srcX = 4 * 64;
-                this.sprite.srcY = 64;
+                this.sprite.srcY = offset + 64;
                 this.sprite.width = 2 * 64;
                 this.sprite.height = 64;
             }
@@ -577,7 +686,9 @@ var EnemyManager = (function () {
             e.updateHideAfter();
             if (e.hp > 0) {
                 if (Game.spritesIntersect(e.sprite, player.sprite)) {
-                    player.takeDamage(1);
+                    if (player.takeDamage(1)) {
+                        e.takeDamage(1);
+                    }
                 }
             }
         }
@@ -679,6 +790,98 @@ var ExplosionManager = (function () {
     return ExplosionManager;
 }());
 var globalGame = null;
+var GOODIE_WEAPON = 0;
+var GOODIE_SPEED = 1;
+var GOODIE_SHIELD = 2;
+var Goodie = (function (_super) {
+    __extends(Goodie, _super);
+    function Goodie() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return Goodie;
+}(Sprite));
+var GoodieManager = (function () {
+    function GoodieManager() {
+        this.goodies = [];
+        this.reset();
+    }
+    GoodieManager.prototype.reset = function () {
+        this.goodieCount = 0;
+        for (var _i = 0, _a = this.goodies; _i < _a.length; _i++) {
+            var g = _a[_i];
+            g.visible = false;
+        }
+    };
+    GoodieManager.prototype.update = function (frame, player) {
+        for (var _i = 0, _a = this.goodies; _i < _a.length; _i++) {
+            var g = _a[_i];
+            if (g.visible) {
+                g.pos.x -= 3;
+                if (frame % 15 == 0) {
+                    if (frame % 30 == 0) {
+                        this.setFrame(g, g.type + 1);
+                    }
+                    else {
+                        this.setFrame(g, 0);
+                    }
+                }
+                if (Game.spritesIntersect(player.sprite, g)) {
+                    g.visible = false;
+                    if (g.type == GOODIE_WEAPON) {
+                        player.upgradeWeapon();
+                    }
+                    if (g.type == GOODIE_SHIELD) {
+                        player.upgradeShield();
+                    }
+                    if (g.type == GOODIE_SPEED) {
+                        player.upgradeSpeed();
+                    }
+                }
+            }
+        }
+    };
+    GoodieManager.prototype.getFirstDead = function () {
+        for (var _i = 0, _a = this.goodies; _i < _a.length; _i++) {
+            var g = _a[_i];
+            if (!g.visible) {
+                return g;
+            }
+        }
+        return null;
+    };
+    GoodieManager.prototype.setFrame = function (g, frame) {
+        g.srcX = 7 * 64;
+        g.srcY = frame * 64;
+    };
+    GoodieManager.prototype.spawn = function (x, y, type) {
+        if (globalGame.player.shield) {
+            if (type == GOODIE_SHIELD) {
+                type = GOODIE_SPEED;
+            }
+        }
+        var g = this.getFirstDead();
+        if (g == null) {
+            g = new Goodie(x, y);
+            this.goodies.push(g);
+            globalGame.engine.sprites.push(g);
+            g.width = 64;
+            g.height = 64;
+        }
+        g.visible = true;
+        g.pos.x = x;
+        g.pos.y = y;
+        g.type = type;
+        this.setFrame(g, 0);
+    };
+    GoodieManager.prototype.dropGoodie = function (enemyType, x, y) {
+        if (enemyType == ENEMY_TYPE_UFO_BLUE) {
+            this.goodieCount++;
+            //todo different goodies!
+            this.spawn(x, y, this.goodieCount % 3);
+        }
+    };
+    return GoodieManager;
+}());
 var Game = (function () {
     function Game(engine) {
         this.engine = engine;
@@ -688,6 +891,7 @@ var Game = (function () {
         this.particles = new ParticleManager(this);
         this.enemyManager = new EnemyManager(engine, this.gameObjects);
         this.explosionManager = new ExplosionManager();
+        this.goodieManager = new GoodieManager();
         globalGame = this;
         this.waitForSpaceKey = false;
         this.showLogo = false;
@@ -712,6 +916,7 @@ var Game = (function () {
         this.starfield.update();
         this.explosionManager.update(this.particles);
         this.particles.update(frame);
+        this.goodieManager.update(frame, this.player);
         for (var _i = 0, _a = this.gameObjects; _i < _a.length; _i++) {
             var obj = _a[_i];
             obj.updateHideAfter();
@@ -731,6 +936,7 @@ var Game = (function () {
                 this.waitForSpaceKey = false;
                 this.player.reset();
                 this.enemyManager.reset();
+                this.goodieManager.reset();
             }
             return;
         }
@@ -746,16 +952,16 @@ var Game = (function () {
         this.enemyManager.update(this.player);
         //input
         if (this.engine.isKeyDown(KEY_DOWN)) {
-            this.player.speed.y += 1;
+            this.player.speed.y += 1 + this.player.speedUpgrade;
         }
         if (this.engine.isKeyDown(KEY_UP)) {
-            this.player.speed.y -= 1;
+            this.player.speed.y -= 1 + this.player.speedUpgrade;
         }
         if (this.engine.isKeyDown(KEY_LEFT)) {
-            this.player.speed.x -= 1;
+            this.player.speed.x -= 1 + this.player.speedUpgrade;
         }
         if (this.engine.isKeyDown(KEY_RIGHT)) {
-            this.player.speed.x += 1;
+            this.player.speed.x += 1 + this.player.speedUpgrade;
         }
         if (this.engine.isKeyDown(KEY_SPACE)) {
             this.player.shoot(frame, this.bulletManager);
@@ -786,6 +992,7 @@ var Game = (function () {
         o.start(0);
         g.gain.value = 0.1;
         g.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + 0.4);
+        o.stop(this.context.currentTime + 0.5);
     };
     Game.prototype.playExplosionSound = function () {
         if (this.context == null) {
@@ -801,6 +1008,7 @@ var Game = (function () {
         o.start(0);
         g.gain.value = 0.2;
         g.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + 0.4);
+        o.stop(this.context.currentTime + 0.5);
     };
     return Game;
 }());
