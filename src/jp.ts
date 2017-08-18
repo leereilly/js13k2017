@@ -14,6 +14,82 @@ const REPLACE_G = 153;
 const REPLACE_B = 153;
 
 
+const ENEMY_TYPE_UFO = 0;
+const ENEMY_TYPE_UFO_BLUE = 1;
+const ENEMY_TYPE_UFO_YELLOW = 2;
+const ENEMY_TYPE_UFO_ORANGE = 3;
+
+const ENEMY_TYPE_SHOOTER = 4;
+const ENEMY_TYPE_SHOOTER_BLUE = 5;
+
+const ENEMY_TYPE_DIAMOND = 6;
+const ENEMY_TYPE_DIAMOND_BLUE = 7;
+const ENEMY_TYPE_DIAMOND_YELLOW = 8;
+
+//time, type, attackvector
+const ATTACK_PATTERN = [
+    0, ENEMY_TYPE_UFO_ORANGE, 11,
+    50, ENEMY_TYPE_UFO_YELLOW, 10,
+    20, ENEMY_TYPE_UFO_BLUE, 13,
+    30, ENEMY_TYPE_UFO_BLUE, 10,
+    40, ENEMY_TYPE_UFO_BLUE, 9,
+    50, ENEMY_TYPE_UFO_BLUE, 10,
+
+    10, ENEMY_TYPE_DIAMOND_YELLOW, 1,
+    10, ENEMY_TYPE_DIAMOND_BLUE, 2,
+    10, ENEMY_TYPE_SHOOTER_BLUE, 3,
+    30 + 0, ENEMY_TYPE_DIAMOND, 4,
+    30 + 20, ENEMY_TYPE_SHOOTER, 5,
+
+
+    100, ENEMY_TYPE_UFO, 2,
+    120, ENEMY_TYPE_UFO, 2,
+    140, ENEMY_TYPE_UFO_BLUE, 2,
+    300 + 0, ENEMY_TYPE_UFO, 4,
+    300 + 20, ENEMY_TYPE_UFO, 4,
+    300 + 40, ENEMY_TYPE_UFO_BLUE, 4,
+    500 + 0, ENEMY_TYPE_UFO, 3,
+    500 + 20, ENEMY_TYPE_UFO, 3,
+    500 + 40, ENEMY_TYPE_UFO_BLUE, 3,
+    700, ENEMY_TYPE_UFO, 2,
+    700, ENEMY_TYPE_UFO, 3,
+    700, ENEMY_TYPE_UFO_BLUE, 4,
+    900, ENEMY_TYPE_UFO, 2,
+    900, ENEMY_TYPE_UFO_BLUE, 3,
+    900, ENEMY_TYPE_UFO, 4,
+    1100, ENEMY_TYPE_UFO_BLUE, 2,
+    1100, ENEMY_TYPE_UFO, 3,
+    1100, ENEMY_TYPE_UFO, 4,
+    1300, ENEMY_TYPE_UFO, 0,
+    1330, ENEMY_TYPE_UFO, 0,
+    1360, ENEMY_TYPE_UFO_BLUE, 0,
+    1500 + 0, ENEMY_TYPE_UFO, 1,
+    1500 + 30, ENEMY_TYPE_UFO, 1,
+    1500 + 60, ENEMY_TYPE_UFO_BLUE, 1,
+    1700 + 0, ENEMY_TYPE_UFO, 0,
+    1700 + 30, ENEMY_TYPE_UFO, 0,
+    1700 + 60, ENEMY_TYPE_UFO_BLUE, 0,
+];
+
+const ATTACK_VECTORS = [
+    /*  0*/ [1920, 100, 100, 540, 1820, 500, 100, 1080], //z
+    /*  1*/ [1920, 980, 100, 540, 1820, 500, 100, 0], //inverted z
+    /*  2*/ [1920, 100, 0, 100], //straight top
+    /*  3*/ [1920, 500, 0, 500], //straight center
+    /*  4*/ [1920, 950, 0, 950], //straight bottom
+    /*  5*/ [1920, 100, 1800, 100, 1800, 950, 1800, 100, 0, 100], //slow shooter from top
+    /*  6*/ [1920, 950, 1600, 950, 1600, 100, 1600, 950, 0, 950], //slow shooter from bottom
+    /*  7*/ [1920, 100, 1300, 950, 1000, 100, 800, 950, 400, 100, 0, 950], //bounce from top
+    /*  8*/ [1920, 950, 1400, 100, 1100, 950, 900, 100, 500, 950, 0, 100], //bounce from bottom
+    /*  9*/ [1920, 100, 1000, 950, 0, 100], //pyramid from top
+    /* 10*/ [1920, 950, 1000, 100, 0, 950], //pyramid from bottom
+
+    /* 11*/ [0, 100, 1920, 100], //straight top reverse
+    /* 12*/ [0, 500, 1920, 500], //straight center reverse
+    /* 13*/ [0, 950, 1920, 950], //straight bottom reverse
+];
+
+
 class Point {
     x: number;
     y: number;
@@ -74,11 +150,18 @@ class Engine {
         this.trackedKeys = [];
 
         //recolor copy sprites on the sprite sheet
-        //blue ufo
-        this.recolorCopy(this.spriteCanvasCtx, 4 * 64, 0, 64 * 2, 64 * 4, [{r: 85, g: 153, b: 255} ]);
+        //blue ufo, yellow ufo, orange ufo
+        this.recolorCopy(this.spriteCanvasCtx, 4 * 64, 0, 64 * 2, 64 * 2, [{r: 85, g: 153, b: 255}, {r: 255, g: 204, b: 0}, {r: 255, g: 100, b: 55} ]);
+
+        //shooter blue
+        this.recolorCopy(this.spriteCanvasCtx, 8 * 64, 0, 64, 64 * 4, [{r: 85, g: 153, b: 255}]);
+
+        //diamonds blue, yellow
+        this.recolorCopy(this.spriteCanvasCtx, 9 * 64, 0, 2 * 64, 64 * 4, [{r: 85, g: 153, b: 255}, {r: 255, g: 204, b: 0}]);
+
         //goodies
-        //yellow, blue, green
-        this.recolorCopy(this.spriteCanvasCtx, 7 * 64, 0, 64, 64, [{r: 255, g: 204, b: 0}, {r: 42, g: 170, b: 255}, {r: 0, g: 190, b: 0}]);
+        //yellow, blue, green, white
+        this.recolorCopy(this.spriteCanvasCtx, 7 * 64, 0, 64, 64, [{r: 255, g: 204, b: 0}, {r: 42, g: 170, b: 255}, {r: 0, g: 190, b: 0}, {r: 255, g: 255, b: 255}]);
 
 
         document.onkeydown = this.keyDown.bind(this);
@@ -186,6 +269,7 @@ class Logo {
 
     setToRestart() {
         this.sprite.srcY = 8 * 64;
+        this.sprite.width = 8 * 64 + 40;
     }
 
     hide() {
@@ -206,7 +290,6 @@ class Logo {
         this.sprite.scale = 1;
         this.sprite.pos.x = engine.getWidth() / 2;
         this.sprite.pos.y = engine.getHeight() / 2;
-        let index = engine.sprites.indexOf(this.sprite);
         engine.bringSpriteToFront(this.sprite);
     }
 
@@ -258,6 +341,7 @@ class Player extends GameObject {
     lastShotTime: number;
     breakBetweenShots: number;
     shots: number;
+    bshots: number;
     engine: Engine;
     spreadShots: boolean;
     shieldSprite: Sprite;
@@ -268,6 +352,7 @@ class Player extends GameObject {
     shotsPerShot: number;
     backShotsPerShot: number;
     points: number;
+    bestPoints: number;
 
     constructor(engine: Engine, x: number, y: number) {
         super(engine, x, y);
@@ -279,7 +364,7 @@ class Player extends GameObject {
 
         this.breakBetweenShots = 5;
         this.lastShotTime = 0;
-        this.shots = 0;
+        this.bestPoints = 0;
 
         this.hp = 1;
         this.reset();
@@ -312,12 +397,12 @@ class Player extends GameObject {
             }
             for (let i =0 ; i < this.backShotsPerShot; i++) {
                 let speedY = 0;
-                this.shots++;
+                this.bshots++;
                 if (this.spreadShots) {
-                    if (this.shots % 3 == 0) {
+                    if (this.bshots % 3 == 0) {
                         speedY = 4;
                     }
-                    if (this.shots % 3 == 1) {
+                    if (this.bshots % 3 == 1) {
                         speedY = -4;
                     }
                 }
@@ -382,7 +467,13 @@ class Player extends GameObject {
         this.speedUpgrade = 0;
         this.shotsPerShot = 1;
         this.backShotsPerShot = 0;
+        if (this.points > this.bestPoints) {
+            this.bestPoints = this.points;
+            globalGame.speak("the new top score is " + this.bestPoints + " points");
+        }
         this.points = 0;
+        this.shots = 0;
+        this.bshots = 0;
     }
 
     upgradeWeapon() {
@@ -448,6 +539,11 @@ class Player extends GameObject {
         this.points += 50;
         globalGame.speak("speed increased!");
         this.speedUpgrade += 0.1;
+    }
+
+    givePoints(amount: number) {
+        this.points += amount;
+        globalGame.speak("bonus points!");
     }
 }
 
@@ -640,9 +736,6 @@ class ParticleManager {
     }
 }
 
-const ENEMY_TYPE_UFO = 0;
-const ENEMY_TYPE_UFO_BLUE = 1;
-
 class Enemy extends GameObject {
     type: number;
     stop: boolean;
@@ -656,24 +749,56 @@ class Enemy extends GameObject {
 
     setFrame(frame: number) {
         this.frame = frame;
-        if (this.type == ENEMY_TYPE_UFO_BLUE || this.type == ENEMY_TYPE_UFO) {
+        if (this.type <= ENEMY_TYPE_UFO_ORANGE) {
             let offset = 0;
             if (this.type == ENEMY_TYPE_UFO_BLUE) {
+                offset = 2 * 64;
+            }
+            if (this.type == ENEMY_TYPE_UFO_YELLOW) {
                 offset = 4 * 64;
             }
-            if (frame == 0) {
-                this.sprite.srcX = 4 * 64;
-                this.sprite.srcY = offset;
-                this.sprite.width = 2 * 64;
-                this.sprite.height = 64;
+            if (this.type == ENEMY_TYPE_UFO_ORANGE) {
+                offset = 6 * 64;
             }
+            this.sprite.srcX = 4 * 64;
+            this.sprite.srcY = offset;
+            this.sprite.width = 2 * 64;
+            this.sprite.height = 64;
             if (frame == 1) {
-                this.sprite.srcX = 4 * 64;
                 this.sprite.srcY = offset + 64;
-                this.sprite.width = 2 * 64;
-                this.sprite.height = 64;
+            }
+        } else if (this.type <= ENEMY_TYPE_SHOOTER_BLUE) {
+            let offset = 0;
+            if (this.type == ENEMY_TYPE_SHOOTER_BLUE) {
+                offset = 4 * 64;
+            }
+            this.sprite.srcX = 8 * 64;
+            this.sprite.srcY = offset;
+            this.sprite.width = 64;
+            this.sprite.height = 2 * 64;
+
+            if (frame == 1) {
+                this.sprite.srcY = offset + 2 * 64;
+            }
+        } else {
+            let offset = 0;
+            if (this.type == ENEMY_TYPE_DIAMOND_BLUE) {
+                offset = 4 * 64;
+            }
+            if (this.type == ENEMY_TYPE_DIAMOND_YELLOW) {
+                offset = 8 * 64;
+            }
+
+            this.sprite.srcX = 9 * 64;
+            this.sprite.srcY = offset;
+            this.sprite.width = 2 * 64;
+            this.sprite.height = 2 * 64;
+
+            if (frame == 1) {
+                this.sprite.srcY = offset + 2 * 64;
             }
         }
+
     }
 
     constructor(engine: Engine) {
@@ -689,9 +814,16 @@ class Enemy extends GameObject {
         this.attackStep = 0;
         this.attackSubStep = 0;
 
-        //todo typ abhängig
         this.hp = 1;
-        this.attackSpeed = 0.01;
+
+        if (this.type == ENEMY_TYPE_UFO_YELLOW || this.type == ENEMY_TYPE_DIAMOND || this.type == ENEMY_TYPE_DIAMOND_BLUE) {
+            this.hp = 2;
+        }
+        if (this.type == ENEMY_TYPE_UFO_ORANGE || this.type == ENEMY_TYPE_DIAMOND_YELLOW) {
+            this.hp = 4;
+        }
+
+        this.attackSpeed = this.calcAttackSpeed(attackVector[0], attackVector[1], attackVector[2], attackVector[3]);
         this.setFrame(0);
 
         this.sprite.visible = true;
@@ -700,20 +832,40 @@ class Enemy extends GameObject {
         this.stop = false;
     }
 
+    calcAttackSpeed(x1, y1, x2, y2): number {
+        return this.getSpeed()/(Math.abs(x1 - x2) + Math.abs(y1 - y2));
+    }
+
+    getSpeed(): number {
+        if (this.type == ENEMY_TYPE_SHOOTER) {
+            return 8;
+        }
+        if (this.type == ENEMY_TYPE_UFO_YELLOW) {
+            return 14;
+        }
+        if (this.type == ENEMY_TYPE_UFO_ORANGE || this.type == ENEMY_TYPE_DIAMOND_YELLOW) {
+            return 18;
+        }
+        return 12;
+    }
+
     update(frame: number) {
         super.update(frame);
         if (this.stop) {
             return;
         }
 
+        let calcSpeed = false;
         this.attackSubStep += this.attackSpeed;
         if (this.attackSubStep > 1) {
             this.attackSubStep = 0;
             this.attackStep++;
+            calcSpeed = true;
         }
 
         if (this.attackStep * 2 + 2 >= this.attackVector.length) {
             this.kill(0);
+            return;
         }
 
         //from
@@ -723,6 +875,10 @@ class Enemy extends GameObject {
         //to
         let tx = this.attackVector[this.attackStep * 2 + 2];
         let ty = this.attackVector[this.attackStep * 2 + 3];
+
+        if (calcSpeed) {
+            this.attackSpeed = this.calcAttackSpeed(fx, fy, tx, ty);
+        }
 
         this.sprite.pos.x = fx + (tx - fx) * this.attackSubStep;
         this.sprite.pos.y = fy + (ty - fy) * this.attackSubStep;
@@ -743,43 +899,12 @@ class Enemy extends GameObject {
     }
 }
 
-//time, type, attackvector
-const ATTACK_PATTERN = [
-    100, ENEMY_TYPE_UFO, 2,
-    120, ENEMY_TYPE_UFO, 2,
-    140, ENEMY_TYPE_UFO_BLUE, 2,
-    300 + 0, ENEMY_TYPE_UFO, 4,
-    300 + 20, ENEMY_TYPE_UFO, 4,
-    300 + 40, ENEMY_TYPE_UFO_BLUE, 4,
-    500 + 0, ENEMY_TYPE_UFO, 3,
-    500 + 20, ENEMY_TYPE_UFO, 3,
-    500 + 40, ENEMY_TYPE_UFO_BLUE, 3,
-    700, ENEMY_TYPE_UFO, 2,
-    700, ENEMY_TYPE_UFO, 3,
-    700, ENEMY_TYPE_UFO_BLUE, 4,
-    900, ENEMY_TYPE_UFO, 2,
-    900, ENEMY_TYPE_UFO_BLUE, 3,
-    900, ENEMY_TYPE_UFO, 4,
-    1100, ENEMY_TYPE_UFO_BLUE, 2,
-    1100, ENEMY_TYPE_UFO, 3,
-    1100, ENEMY_TYPE_UFO, 4,
-    1300, ENEMY_TYPE_UFO, 0,
-    1330, ENEMY_TYPE_UFO, 0,
-    1360, ENEMY_TYPE_UFO_BLUE, 0,
-    1500 + 0, ENEMY_TYPE_UFO, 1,
-    1500 + 30, ENEMY_TYPE_UFO, 1,
-    1500 + 60, ENEMY_TYPE_UFO_BLUE, 1,
-    1700 + 0, ENEMY_TYPE_UFO, 0,
-    1700 + 30, ENEMY_TYPE_UFO, 0,
-    1700 + 60, ENEMY_TYPE_UFO_BLUE, 0,
 
-];
 
 class EnemyManager {
     engine: Engine;
     gameObjects: GameObject[];
     enemies: Enemy[];
-    attackVectors: number[][];
 
     time: number;
     currentAttack: number;
@@ -788,14 +913,6 @@ class EnemyManager {
         this.engine = engine;
         this.gameObjects = gameObjects;
         this.enemies = [];
-        this.attackVectors = [];
-        this.attackVectors.push(
-            /*  0*/ [1920, 100, 100, 540, 1820, 500, 100, 1080], //z
-            /*  1*/ [1920, 980, 100, 540, 1820, 500, 100, 0], //inverted z
-            /*  2*/ [1920, 100, 0, 100], //straight top
-            /*  3*/ [1920, 500, 0, 500], //straight center
-            /*  4*/ [1920, 950, 0, 950], //straight bottom
-        );
         this.reset();
     }
 
@@ -847,7 +964,7 @@ class EnemyManager {
 
     spawn(type: number, attackVectorIndex: number) {
         let e = this.getDeadEnemy();
-        e.spawn(type, this.attackVectors[attackVectorIndex]);
+        e.spawn(type, ATTACK_VECTORS[attackVectorIndex]);
     }
 }
 
@@ -945,6 +1062,7 @@ let globalGame: Game = null;
 const GOODIE_WEAPON = 0;
 const GOODIE_SPEED = 1;
 const GOODIE_SHIELD = 2;
+const GOODIE_POINTS = 3;
 
 class Goodie extends Sprite {
     type: number;
@@ -989,6 +1107,9 @@ class GoodieManager {
                     if (g.type == GOODIE_SPEED) {
                         player.upgradeSpeed();
                     }
+                    if (g.type == GOODIE_POINTS) {
+                        player.givePoints(100);
+                    }
                 }
             }
         }
@@ -1011,9 +1132,22 @@ class GoodieManager {
     spawn(x, y, type) {
         if (globalGame.player.shield) {
             if (type == GOODIE_SHIELD) {
-                type = GOODIE_SPEED;
+                type = GOODIE_POINTS;
             }
         }
+
+        if (globalGame.player.weaponUpgrade > 9) {
+            if (type == GOODIE_WEAPON) {
+                type = GOODIE_POINTS;
+            }
+        }
+
+        if (globalGame.player.speedUpgrade > 2) {
+            if (type == GOODIE_SPEED) {
+                type = GOODIE_POINTS;
+            }
+        }
+
         let g = this.getFirstDead();
         if (g == null) {
             g = new Goodie(x, y);
@@ -1031,9 +1165,8 @@ class GoodieManager {
 
 
     dropGoodie(enemyType: number, x: number, y: number) {
-        if (enemyType == ENEMY_TYPE_UFO_BLUE) {
+        if (enemyType == ENEMY_TYPE_UFO_BLUE || enemyType == ENEMY_TYPE_SHOOTER_BLUE || enemyType == ENEMY_TYPE_DIAMOND_BLUE) {
             this.goodieCount++;
-            //todo different goodies!
             this.spawn(x, y, this.goodieCount % 3);
         }
     }
@@ -1076,10 +1209,13 @@ class Game {
         this.logo.show(this.engine);
         this.player = new Player(this.engine, 0, 0);
         this.gameObjects.push(this.player);
-        this.speak('lost in space');
+        this.speak('lost in space - by j. p. preesents for j. s. 13 k. games');
     }
 
     speak(text: string) {
+        if (window.location.href.indexOf("silent") > -1) {
+            return;
+        }
         let msg = new SpeechSynthesisUtterance();
         msg.volume = 0.6; // 0 to 1
         msg.rate = 1.2; // 0.1 to 10
@@ -1090,6 +1226,17 @@ class Game {
     }
 
     update(frame: number) {
+
+        //render points
+        this.engine.drawCanvasCtx.font = "48px arial";
+        this.engine.drawCanvasCtx.fillStyle = "white";
+        this.engine.drawCanvasCtx.textAlign = "right";
+        this.engine.drawCanvasCtx.fillText("" + this.player.points, 1920 - 50, 50, 300);
+        if (this.player.bestPoints > 0) {
+            this.engine.drawCanvasCtx.font = "24px arial";
+            this.engine.drawCanvasCtx.fillText("top score: " + this.player.bestPoints, 1920 - 50, 100, 300);
+        }
+
         this.starfield.update();
         this.explosionManager.update(this.particles);
         this.particles.update(frame);
@@ -1166,6 +1313,9 @@ class Game {
     }
 
     playShotSound() {
+        if (navigator.userAgent.indexOf("Firefox") != -1) {
+            return;
+        }
         if (this.context == null) {
             this.context = new AudioContext()
         }
@@ -1187,6 +1337,10 @@ class Game {
     }
 
     playExplosionSound() {
+        if (navigator.userAgent.indexOf("Firefox") != -1) {
+            return;
+        }
+
         if (this.context == null) {
             this.context = new AudioContext()
         }

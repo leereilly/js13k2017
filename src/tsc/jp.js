@@ -19,6 +19,72 @@ var KEY_SPACE = 32;
 var REPLACE_R = 153;
 var REPLACE_G = 153;
 var REPLACE_B = 153;
+var ENEMY_TYPE_UFO = 0;
+var ENEMY_TYPE_UFO_BLUE = 1;
+var ENEMY_TYPE_UFO_YELLOW = 2;
+var ENEMY_TYPE_UFO_ORANGE = 3;
+var ENEMY_TYPE_SHOOTER = 4;
+var ENEMY_TYPE_SHOOTER_BLUE = 5;
+var ENEMY_TYPE_DIAMOND = 6;
+var ENEMY_TYPE_DIAMOND_BLUE = 7;
+var ENEMY_TYPE_DIAMOND_YELLOW = 8;
+//time, type, attackvector
+var ATTACK_PATTERN = [
+    0, ENEMY_TYPE_UFO_ORANGE, 11,
+    50, ENEMY_TYPE_UFO_YELLOW, 10,
+    20, ENEMY_TYPE_UFO_BLUE, 13,
+    30, ENEMY_TYPE_UFO_BLUE, 10,
+    40, ENEMY_TYPE_UFO_BLUE, 9,
+    50, ENEMY_TYPE_UFO_BLUE, 10,
+    10, ENEMY_TYPE_DIAMOND_YELLOW, 1,
+    10, ENEMY_TYPE_DIAMOND_BLUE, 2,
+    10, ENEMY_TYPE_SHOOTER_BLUE, 3,
+    30 + 0, ENEMY_TYPE_DIAMOND, 4,
+    30 + 20, ENEMY_TYPE_SHOOTER, 5,
+    100, ENEMY_TYPE_UFO, 2,
+    120, ENEMY_TYPE_UFO, 2,
+    140, ENEMY_TYPE_UFO_BLUE, 2,
+    300 + 0, ENEMY_TYPE_UFO, 4,
+    300 + 20, ENEMY_TYPE_UFO, 4,
+    300 + 40, ENEMY_TYPE_UFO_BLUE, 4,
+    500 + 0, ENEMY_TYPE_UFO, 3,
+    500 + 20, ENEMY_TYPE_UFO, 3,
+    500 + 40, ENEMY_TYPE_UFO_BLUE, 3,
+    700, ENEMY_TYPE_UFO, 2,
+    700, ENEMY_TYPE_UFO, 3,
+    700, ENEMY_TYPE_UFO_BLUE, 4,
+    900, ENEMY_TYPE_UFO, 2,
+    900, ENEMY_TYPE_UFO_BLUE, 3,
+    900, ENEMY_TYPE_UFO, 4,
+    1100, ENEMY_TYPE_UFO_BLUE, 2,
+    1100, ENEMY_TYPE_UFO, 3,
+    1100, ENEMY_TYPE_UFO, 4,
+    1300, ENEMY_TYPE_UFO, 0,
+    1330, ENEMY_TYPE_UFO, 0,
+    1360, ENEMY_TYPE_UFO_BLUE, 0,
+    1500 + 0, ENEMY_TYPE_UFO, 1,
+    1500 + 30, ENEMY_TYPE_UFO, 1,
+    1500 + 60, ENEMY_TYPE_UFO_BLUE, 1,
+    1700 + 0, ENEMY_TYPE_UFO, 0,
+    1700 + 30, ENEMY_TYPE_UFO, 0,
+    1700 + 60, ENEMY_TYPE_UFO_BLUE, 0,
+];
+var ATTACK_VECTORS = [
+    /*  0*/ [1920, 100, 100, 540, 1820, 500, 100, 1080],
+    /*  1*/ [1920, 980, 100, 540, 1820, 500, 100, 0],
+    /*  2*/ [1920, 100, 0, 100],
+    /*  3*/ [1920, 500, 0, 500],
+    /*  4*/ [1920, 950, 0, 950],
+    /*  5*/ [1920, 100, 1800, 100, 1800, 950, 1800, 100, 0, 100],
+    /*  6*/ [1920, 950, 1600, 950, 1600, 100, 1600, 950, 0, 950],
+    /*  7*/ [1920, 100, 1300, 950, 1000, 100, 800, 950, 400, 100, 0, 950],
+    /*  8*/ [1920, 950, 1400, 100, 1100, 950, 900, 100, 500, 950, 0, 100],
+    /*  9*/ [1920, 100, 1000, 950, 0, 100],
+    /* 10*/ [1920, 950, 1000, 100, 0, 950],
+    /* 11*/ [0, 100, 1920, 100],
+    /* 12*/ [0, 500, 1920, 500],
+    /* 13*/ [0, 950, 1920, 950],
+];
 var Point = (function () {
     function Point(x, y) {
         this.x = x;
@@ -56,11 +122,15 @@ var Engine = (function () {
         this.sprites = [];
         this.trackedKeys = [];
         //recolor copy sprites on the sprite sheet
-        //blue ufo
-        this.recolorCopy(this.spriteCanvasCtx, 4 * 64, 0, 64 * 2, 64 * 4, [{ r: 85, g: 153, b: 255 }]);
+        //blue ufo, yellow ufo, orange ufo
+        this.recolorCopy(this.spriteCanvasCtx, 4 * 64, 0, 64 * 2, 64 * 2, [{ r: 85, g: 153, b: 255 }, { r: 255, g: 204, b: 0 }, { r: 255, g: 100, b: 55 }]);
+        //shooter blue
+        this.recolorCopy(this.spriteCanvasCtx, 8 * 64, 0, 64, 64 * 4, [{ r: 85, g: 153, b: 255 }]);
+        //diamonds blue, yellow
+        this.recolorCopy(this.spriteCanvasCtx, 9 * 64, 0, 2 * 64, 64 * 4, [{ r: 85, g: 153, b: 255 }, { r: 255, g: 204, b: 0 }]);
         //goodies
-        //yellow, blue, green
-        this.recolorCopy(this.spriteCanvasCtx, 7 * 64, 0, 64, 64, [{ r: 255, g: 204, b: 0 }, { r: 42, g: 170, b: 255 }, { r: 0, g: 190, b: 0 }]);
+        //yellow, blue, green, white
+        this.recolorCopy(this.spriteCanvasCtx, 7 * 64, 0, 64, 64, [{ r: 255, g: 204, b: 0 }, { r: 42, g: 170, b: 255 }, { r: 0, g: 190, b: 0 }, { r: 255, g: 255, b: 255 }]);
         document.onkeydown = this.keyDown.bind(this);
         document.onkeyup = this.keyUp.bind(this);
         this.game = new Game(this);
@@ -142,6 +212,7 @@ var Logo = (function () {
     }
     Logo.prototype.setToRestart = function () {
         this.sprite.srcY = 8 * 64;
+        this.sprite.width = 8 * 64 + 40;
     };
     Logo.prototype.hide = function () {
         if (window.location.href.indexOf("quick") > -1) {
@@ -159,7 +230,6 @@ var Logo = (function () {
         this.sprite.scale = 1;
         this.sprite.pos.x = engine.getWidth() / 2;
         this.sprite.pos.y = engine.getHeight() / 2;
-        var index = engine.sprites.indexOf(this.sprite);
         engine.bringSpriteToFront(this.sprite);
     };
     Logo.prototype.blendIn = function () {
@@ -208,7 +278,7 @@ var Player = (function (_super) {
         _this.sprite.height = 2 * 64;
         _this.breakBetweenShots = 5;
         _this.lastShotTime = 0;
-        _this.shots = 0;
+        _this.bestPoints = 0;
         _this.hp = 1;
         _this.reset();
         _this.shieldSprite = new Sprite(0, 0);
@@ -240,12 +310,12 @@ var Player = (function (_super) {
             }
             for (var i = 0; i < this.backShotsPerShot; i++) {
                 var speedY = 0;
-                this.shots++;
+                this.bshots++;
                 if (this.spreadShots) {
-                    if (this.shots % 3 == 0) {
+                    if (this.bshots % 3 == 0) {
                         speedY = 4;
                     }
-                    if (this.shots % 3 == 1) {
+                    if (this.bshots % 3 == 1) {
                         speedY = -4;
                     }
                 }
@@ -304,7 +374,13 @@ var Player = (function (_super) {
         this.speedUpgrade = 0;
         this.shotsPerShot = 1;
         this.backShotsPerShot = 0;
+        if (this.points > this.bestPoints) {
+            this.bestPoints = this.points;
+            globalGame.speak("the new top score is " + this.bestPoints + " points");
+        }
         this.points = 0;
+        this.shots = 0;
+        this.bshots = 0;
     };
     Player.prototype.upgradeWeapon = function () {
         this.weaponUpgrade += 1;
@@ -357,6 +433,10 @@ var Player = (function (_super) {
         this.points += 50;
         globalGame.speak("speed increased!");
         this.speedUpgrade += 0.1;
+    };
+    Player.prototype.givePoints = function (amount) {
+        this.points += amount;
+        globalGame.speak("bonus points!");
     };
     return Player;
 }(GameObject));
@@ -533,8 +613,6 @@ var ParticleManager = (function () {
     };
     return ParticleManager;
 }());
-var ENEMY_TYPE_UFO = 0;
-var ENEMY_TYPE_UFO_BLUE = 1;
 var Enemy = (function (_super) {
     __extends(Enemy, _super);
     function Enemy(engine) {
@@ -546,22 +624,52 @@ var Enemy = (function (_super) {
     }
     Enemy.prototype.setFrame = function (frame) {
         this.frame = frame;
-        if (this.type == ENEMY_TYPE_UFO_BLUE || this.type == ENEMY_TYPE_UFO) {
+        if (this.type <= ENEMY_TYPE_UFO_ORANGE) {
             var offset = 0;
             if (this.type == ENEMY_TYPE_UFO_BLUE) {
+                offset = 2 * 64;
+            }
+            if (this.type == ENEMY_TYPE_UFO_YELLOW) {
                 offset = 4 * 64;
             }
-            if (frame == 0) {
-                this.sprite.srcX = 4 * 64;
-                this.sprite.srcY = offset;
-                this.sprite.width = 2 * 64;
-                this.sprite.height = 64;
+            if (this.type == ENEMY_TYPE_UFO_ORANGE) {
+                offset = 6 * 64;
             }
+            this.sprite.srcX = 4 * 64;
+            this.sprite.srcY = offset;
+            this.sprite.width = 2 * 64;
+            this.sprite.height = 64;
             if (frame == 1) {
-                this.sprite.srcX = 4 * 64;
                 this.sprite.srcY = offset + 64;
-                this.sprite.width = 2 * 64;
-                this.sprite.height = 64;
+            }
+        }
+        else if (this.type <= ENEMY_TYPE_SHOOTER_BLUE) {
+            var offset = 0;
+            if (this.type == ENEMY_TYPE_SHOOTER_BLUE) {
+                offset = 4 * 64;
+            }
+            this.sprite.srcX = 8 * 64;
+            this.sprite.srcY = offset;
+            this.sprite.width = 64;
+            this.sprite.height = 2 * 64;
+            if (frame == 1) {
+                this.sprite.srcY = offset + 2 * 64;
+            }
+        }
+        else {
+            var offset = 0;
+            if (this.type == ENEMY_TYPE_DIAMOND_BLUE) {
+                offset = 4 * 64;
+            }
+            if (this.type == ENEMY_TYPE_DIAMOND_YELLOW) {
+                offset = 8 * 64;
+            }
+            this.sprite.srcX = 9 * 64;
+            this.sprite.srcY = offset;
+            this.sprite.width = 2 * 64;
+            this.sprite.height = 2 * 64;
+            if (frame == 1) {
+                this.sprite.srcY = offset + 2 * 64;
             }
         }
     };
@@ -570,27 +678,50 @@ var Enemy = (function (_super) {
         this.attackVector = attackVector;
         this.attackStep = 0;
         this.attackSubStep = 0;
-        //todo typ abhängig
         this.hp = 1;
-        this.attackSpeed = 0.01;
+        if (this.type == ENEMY_TYPE_UFO_YELLOW || this.type == ENEMY_TYPE_DIAMOND || this.type == ENEMY_TYPE_DIAMOND_BLUE) {
+            this.hp = 2;
+        }
+        if (this.type == ENEMY_TYPE_UFO_ORANGE || this.type == ENEMY_TYPE_DIAMOND_YELLOW) {
+            this.hp = 4;
+        }
+        this.attackSpeed = this.calcAttackSpeed(attackVector[0], attackVector[1], attackVector[2], attackVector[3]);
         this.setFrame(0);
         this.sprite.visible = true;
         this.sprite.pos.x = attackVector[0];
         this.sprite.pos.y = attackVector[1];
         this.stop = false;
     };
+    Enemy.prototype.calcAttackSpeed = function (x1, y1, x2, y2) {
+        return this.getSpeed() / (Math.abs(x1 - x2) + Math.abs(y1 - y2));
+    };
+    Enemy.prototype.getSpeed = function () {
+        if (this.type == ENEMY_TYPE_SHOOTER) {
+            return 8;
+        }
+        if (this.type == ENEMY_TYPE_UFO_YELLOW) {
+            return 14;
+        }
+        if (this.type == ENEMY_TYPE_UFO_ORANGE || this.type == ENEMY_TYPE_DIAMOND_YELLOW) {
+            return 18;
+        }
+        return 12;
+    };
     Enemy.prototype.update = function (frame) {
         _super.prototype.update.call(this, frame);
         if (this.stop) {
             return;
         }
+        var calcSpeed = false;
         this.attackSubStep += this.attackSpeed;
         if (this.attackSubStep > 1) {
             this.attackSubStep = 0;
             this.attackStep++;
+            calcSpeed = true;
         }
         if (this.attackStep * 2 + 2 >= this.attackVector.length) {
             this.kill(0);
+            return;
         }
         //from
         var fx = this.attackVector[this.attackStep * 2];
@@ -598,6 +729,9 @@ var Enemy = (function (_super) {
         //to
         var tx = this.attackVector[this.attackStep * 2 + 2];
         var ty = this.attackVector[this.attackStep * 2 + 3];
+        if (calcSpeed) {
+            this.attackSpeed = this.calcAttackSpeed(fx, fy, tx, ty);
+        }
         this.sprite.pos.x = fx + (tx - fx) * this.attackSubStep;
         this.sprite.pos.y = fy + (ty - fy) * this.attackSubStep;
         if ((frame + this.animOffset) % 10 == 0) {
@@ -615,48 +749,11 @@ var Enemy = (function (_super) {
     };
     return Enemy;
 }(GameObject));
-//time, type, attackvector
-var ATTACK_PATTERN = [
-    100, ENEMY_TYPE_UFO, 2,
-    120, ENEMY_TYPE_UFO, 2,
-    140, ENEMY_TYPE_UFO_BLUE, 2,
-    300 + 0, ENEMY_TYPE_UFO, 4,
-    300 + 20, ENEMY_TYPE_UFO, 4,
-    300 + 40, ENEMY_TYPE_UFO_BLUE, 4,
-    500 + 0, ENEMY_TYPE_UFO, 3,
-    500 + 20, ENEMY_TYPE_UFO, 3,
-    500 + 40, ENEMY_TYPE_UFO_BLUE, 3,
-    700, ENEMY_TYPE_UFO, 2,
-    700, ENEMY_TYPE_UFO, 3,
-    700, ENEMY_TYPE_UFO_BLUE, 4,
-    900, ENEMY_TYPE_UFO, 2,
-    900, ENEMY_TYPE_UFO_BLUE, 3,
-    900, ENEMY_TYPE_UFO, 4,
-    1100, ENEMY_TYPE_UFO_BLUE, 2,
-    1100, ENEMY_TYPE_UFO, 3,
-    1100, ENEMY_TYPE_UFO, 4,
-    1300, ENEMY_TYPE_UFO, 0,
-    1330, ENEMY_TYPE_UFO, 0,
-    1360, ENEMY_TYPE_UFO_BLUE, 0,
-    1500 + 0, ENEMY_TYPE_UFO, 1,
-    1500 + 30, ENEMY_TYPE_UFO, 1,
-    1500 + 60, ENEMY_TYPE_UFO_BLUE, 1,
-    1700 + 0, ENEMY_TYPE_UFO, 0,
-    1700 + 30, ENEMY_TYPE_UFO, 0,
-    1700 + 60, ENEMY_TYPE_UFO_BLUE, 0,
-];
 var EnemyManager = (function () {
     function EnemyManager(engine, gameObjects) {
         this.engine = engine;
         this.gameObjects = gameObjects;
         this.enemies = [];
-        this.attackVectors = [];
-        this.attackVectors.push(
-        /*  0*/ [1920, 100, 100, 540, 1820, 500, 100, 1080], //z
-        /*  1*/ [1920, 980, 100, 540, 1820, 500, 100, 0], //inverted z
-        /*  2*/ [1920, 100, 0, 100], //straight top
-        /*  3*/ [1920, 500, 0, 500], //straight center
-        /*  4*/ [1920, 950, 0, 950]);
         this.reset();
     }
     EnemyManager.prototype.reset = function () {
@@ -706,7 +803,7 @@ var EnemyManager = (function () {
     };
     EnemyManager.prototype.spawn = function (type, attackVectorIndex) {
         var e = this.getDeadEnemy();
-        e.spawn(type, this.attackVectors[attackVectorIndex]);
+        e.spawn(type, ATTACK_VECTORS[attackVectorIndex]);
     };
     return EnemyManager;
 }());
@@ -793,6 +890,7 @@ var globalGame = null;
 var GOODIE_WEAPON = 0;
 var GOODIE_SPEED = 1;
 var GOODIE_SHIELD = 2;
+var GOODIE_POINTS = 3;
 var Goodie = (function (_super) {
     __extends(Goodie, _super);
     function Goodie() {
@@ -836,6 +934,9 @@ var GoodieManager = (function () {
                     if (g.type == GOODIE_SPEED) {
                         player.upgradeSpeed();
                     }
+                    if (g.type == GOODIE_POINTS) {
+                        player.givePoints(100);
+                    }
                 }
             }
         }
@@ -856,7 +957,17 @@ var GoodieManager = (function () {
     GoodieManager.prototype.spawn = function (x, y, type) {
         if (globalGame.player.shield) {
             if (type == GOODIE_SHIELD) {
-                type = GOODIE_SPEED;
+                type = GOODIE_POINTS;
+            }
+        }
+        if (globalGame.player.weaponUpgrade > 9) {
+            if (type == GOODIE_WEAPON) {
+                type = GOODIE_POINTS;
+            }
+        }
+        if (globalGame.player.speedUpgrade > 2) {
+            if (type == GOODIE_SPEED) {
+                type = GOODIE_POINTS;
             }
         }
         var g = this.getFirstDead();
@@ -874,9 +985,8 @@ var GoodieManager = (function () {
         this.setFrame(g, 0);
     };
     GoodieManager.prototype.dropGoodie = function (enemyType, x, y) {
-        if (enemyType == ENEMY_TYPE_UFO_BLUE) {
+        if (enemyType == ENEMY_TYPE_UFO_BLUE || enemyType == ENEMY_TYPE_SHOOTER_BLUE || enemyType == ENEMY_TYPE_DIAMOND_BLUE) {
             this.goodieCount++;
-            //todo different goodies!
             this.spawn(x, y, this.goodieCount % 3);
         }
     };
@@ -901,9 +1011,12 @@ var Game = (function () {
         this.logo.show(this.engine);
         this.player = new Player(this.engine, 0, 0);
         this.gameObjects.push(this.player);
-        this.speak('lost in space');
+        this.speak('lost in space - by j. p. preesents for j. s. 13 k. games');
     };
     Game.prototype.speak = function (text) {
+        if (window.location.href.indexOf("silent") > -1) {
+            return;
+        }
         var msg = new SpeechSynthesisUtterance();
         msg.volume = 0.6; // 0 to 1
         msg.rate = 1.2; // 0.1 to 10
@@ -913,6 +1026,15 @@ var Game = (function () {
         window.speechSynthesis.speak(msg);
     };
     Game.prototype.update = function (frame) {
+        //render points
+        this.engine.drawCanvasCtx.font = "48px arial";
+        this.engine.drawCanvasCtx.fillStyle = "white";
+        this.engine.drawCanvasCtx.textAlign = "right";
+        this.engine.drawCanvasCtx.fillText("" + this.player.points, 1920 - 50, 50, 300);
+        if (this.player.bestPoints > 0) {
+            this.engine.drawCanvasCtx.font = "24px arial";
+            this.engine.drawCanvasCtx.fillText("top score: " + this.player.bestPoints, 1920 - 50, 100, 300);
+        }
         this.starfield.update();
         this.explosionManager.update(this.particles);
         this.particles.update(frame);
@@ -979,6 +1101,9 @@ var Game = (function () {
         return (a.pos.x + a.width - 1 >= b.pos.x && a.pos.x <= b.pos.x + b.width - 1 && a.pos.y + a.height - 1 >= b.pos.y && a.pos.y <= b.pos.y + b.height - 1);
     };
     Game.prototype.playShotSound = function () {
+        if (navigator.userAgent.indexOf("Firefox") != -1) {
+            return;
+        }
         if (this.context == null) {
             this.context = new AudioContext();
         }
@@ -995,6 +1120,9 @@ var Game = (function () {
         o.stop(this.context.currentTime + 0.5);
     };
     Game.prototype.playExplosionSound = function () {
+        if (navigator.userAgent.indexOf("Firefox") != -1) {
+            return;
+        }
         if (this.context == null) {
             this.context = new AudioContext();
         }

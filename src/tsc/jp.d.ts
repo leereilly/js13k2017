@@ -6,6 +6,17 @@ declare const KEY_SPACE = 32;
 declare const REPLACE_R = 153;
 declare const REPLACE_G = 153;
 declare const REPLACE_B = 153;
+declare const ENEMY_TYPE_UFO = 0;
+declare const ENEMY_TYPE_UFO_BLUE = 1;
+declare const ENEMY_TYPE_UFO_YELLOW = 2;
+declare const ENEMY_TYPE_UFO_ORANGE = 3;
+declare const ENEMY_TYPE_SHOOTER = 4;
+declare const ENEMY_TYPE_SHOOTER_BLUE = 5;
+declare const ENEMY_TYPE_DIAMOND = 6;
+declare const ENEMY_TYPE_DIAMOND_BLUE = 7;
+declare const ENEMY_TYPE_DIAMOND_YELLOW = 8;
+declare const ATTACK_PATTERN: number[];
+declare const ATTACK_VECTORS: number[][];
 declare class Point {
     x: number;
     y: number;
@@ -66,6 +77,7 @@ declare class Player extends GameObject {
     lastShotTime: number;
     breakBetweenShots: number;
     shots: number;
+    bshots: number;
     engine: Engine;
     spreadShots: boolean;
     shieldSprite: Sprite;
@@ -75,6 +87,7 @@ declare class Player extends GameObject {
     shotsPerShot: number;
     backShotsPerShot: number;
     points: number;
+    bestPoints: number;
     constructor(engine: Engine, x: number, y: number);
     shoot(frame: number, bulletManager: BulletManager): void;
     update(frame: number): void;
@@ -83,6 +96,7 @@ declare class Player extends GameObject {
     upgradeWeapon(): void;
     upgradeShield(): void;
     upgradeSpeed(): void;
+    givePoints(amount: number): void;
 }
 declare class Bullet extends GameObject {
     lifetime: number;
@@ -113,8 +127,6 @@ declare class ParticleManager {
     spawn(x: number, y: number, speedX: number, speedY: number, lifetime: number, type: number): void;
     update(frame: number): void;
 }
-declare const ENEMY_TYPE_UFO = 0;
-declare const ENEMY_TYPE_UFO_BLUE = 1;
 declare class Enemy extends GameObject {
     type: number;
     stop: boolean;
@@ -127,15 +139,15 @@ declare class Enemy extends GameObject {
     setFrame(frame: number): void;
     constructor(engine: Engine);
     spawn(type: number, attackVector: number[]): void;
+    calcAttackSpeed(x1: any, y1: any, x2: any, y2: any): number;
+    getSpeed(): number;
     update(frame: number): void;
     takeDamage(amount: number): void;
 }
-declare const ATTACK_PATTERN: number[];
 declare class EnemyManager {
     engine: Engine;
     gameObjects: GameObject[];
     enemies: Enemy[];
-    attackVectors: number[][];
     time: number;
     currentAttack: number;
     constructor(engine: Engine, gameObjects: GameObject[]);
@@ -170,6 +182,7 @@ declare let globalGame: Game;
 declare const GOODIE_WEAPON = 0;
 declare const GOODIE_SPEED = 1;
 declare const GOODIE_SHIELD = 2;
+declare const GOODIE_POINTS = 3;
 declare class Goodie extends Sprite {
     type: number;
 }
