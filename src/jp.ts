@@ -1,6 +1,6 @@
 //svg: http://www.svgminify.com/
 //js: http://esprima.org/demo/minify.html
-//Size zip stand 16.8. 9kb (mit minify und normal rar zip)
+//Size zip stand 19th of august is 11kb (with minify und normal zip)
 
 const KEY_LEFT = 37;
 const KEY_UP = 38;

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<filter id="x" x="-.061369" y="-.16871" width="1.1227" height="1.3374" color-interpolation-filters="sRGB">
+<feGaussianBlur stdDeviation="14.008718"/>
+</filter>
+<filter id="w" x="-.051908" y="-.33816" width="1.1038" height="1.6763" color-interpolation-filters="sRGB">
+<feGaussianBlur stdDeviation="5.1460883"/>
+</filter>
+<filter id="v" x="-.15279" y="-.68118" width="1.3056" height="2.3624" color-interpolation-filters="sRGB">
+<feGaussianBlur stdDeviation="3.1628925"/>
+</filter>
+<filter id="t" x="-.34119" y="-.48564" width="1.6824" height="1.9713" color-interpolation-filters="sRGB">
+<feGaussianBlur stdDeviation="6.9305"/>
+</filter>
+<linearGradient id="p" x1="200.21" x2="138.78" y1="-674.67" y2="-674.97" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ffa000" offset="0"/>
+<stop stop-color="#ffa000" stop-opacity="0" offset="1"/>
+</linearGradient>
+<radialGradient id="h" cx="182.64" cy="-675.18" r="15.56" gradientTransform="matrix(.74942 .00667 -.0010342 .1637 45.596 -564.99)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#fc0" offset="0"/>
+<stop stop-color="#fc0" stop-opacity="0" offset="1"/>
+</radialGradient>
+<filter id="s" x="-.11762" y="-.50507" width="1.2352" height="2.0101" color-interpolation-filters="sRGB">
+<feGaussianBlur stdDeviation="1.2849013"/>
+</filter>
+<filter id="q" x="-.32294" y="-.32294" width="1.6459" height="1.6459" color-interpolation-filters="sRGB">
+<feGaussianBlur stdDeviation="4.8497015"/>
+</filter>
+<filter id="r" x="-.11762" y="-.50507" width="1.2352" height="2.0101" color-interpolation-filters="sRGB">
+<feGaussianBlur stdDeviation="1.2849013"/>
+</filter>
+<filter id="u" x="-.15279" y="-.68118" width="1.3056" height="2.3624" color-interpolation-filters="sRGB">
+<feGaussianBlur stdDeviation="3.1628925"/>
+</filter>
+<radialGradient id="g" cx="427.46" cy="-611.66" r="30.932" gradientTransform="matrix(1 0 0 .99336 0 -4.059)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ffd42a" offset="0"/>
+<stop stop-color="#ffd42a" stop-opacity=".90461" offset=".63854"/>
+<stop stop-color="#ffd42a" stop-opacity="0" offset="1"/>
+</radialGradient>
+<radialGradient id="f" cx="472.71" cy="-594.78" r="33.057" gradientTransform="matrix(.57082 0 0 .54381 162.46 -279.72)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ff6f00" offset="0"/>
+<stop stop-color="#ff6f00" offset=".43328"/>
+<stop stop-color="#ff6f00" stop-opacity="0" offset="1"/>
+</radialGradient>
+<radialGradient id="e" cx="472.71" cy="-594.78" r="33.057" gradientTransform="matrix(.57082 0 0 .54381 149 -286.92)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ff6f00" offset="0"/>
+<stop stop-color="#ff6f00" offset=".30079"/>
+<stop stop-color="#ff6f00" stop-opacity="0" offset="1"/>
+</radialGradient>
+<radialGradient id="d" cx="472.71" cy="-594.78" r="33.057" gradientTransform="matrix(.57082 0 0 .54381 163.19 -297.61)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ff6f00" offset="0"/>
+<stop stop-color="#ff6f00" offset=".28754"/>
+<stop stop-color="#ff6f00" stop-opacity="0" offset="1"/>
+</radialGradient>
+<filter id="aa" x="-.082804" y="-.21787" width="1.1656" height="1.4357" color-interpolation-filters="sRGB">
+<feGaussianBlur stdDeviation="12.033757"/>
+</filter>
+<radialGradient id="i" cx="74.128" cy="-649.02" r="90.156" gradientTransform="matrix(.93725 0 0 .92157 27.279 101.03)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#540" stop-opacity="0" offset="0"/>
+<stop stop-color="#3273ce" stop-opacity=".16114" offset=".81176"/>
+<stop stop-color="#2a7fff" offset="1"/>
+</radialGradient>
+<filter id="z" x="-.36202" y="-.358" width="1.724" height="1.716" color-interpolation-filters="sRGB">
+<feGaussianBlur stdDeviation="3.2170552"/>
+</filter>
+<filter id="y" x="-.035076" y="-.79866" width="1.0702" height="2.5973" color-interpolation-filters="sRGB">
+<feGaussianBlur stdDeviation="4.9994494"/>
+</filter>
+</defs>
+<metadata>
+<rdf:RDF>
+<cc:Work rdf:about="">
+<dc:format>image/svg+xml</dc:format>
+<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+<dc:title/>
+</cc:Work>
+</rdf:RDF>
+</metadata>
+<g transform="translate(-12.256 708.17)">
+<rect transform="matrix(.93995 0 0 1.1718 7.2861 115.88)" x="151.7" y="-680.09" width="49.681" height="11.144" rx="13.767" ry="2.8362" color="#000000" color-rendering="auto" fill="url(#p)" filter="url(#v)" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="isolation:auto;mix-blend-mode:normal"/>
+<rect x="170.06" y="-677.35" width="26.219" height="6.1056" rx="7.2654" ry="1.5539" color="#000000" color-rendering="auto" fill="url(#h)" filter="url(#s)" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="isolation:auto;mix-blend-mode:normal"/>
+<g transform="translate(-126.86 451.73)">
+<g transform="translate(114.48 198.65)">
+<text id="b" transform="rotate(-12.251)" x="160.63066" y="-365.56628" fill="#000000" font-family="sans-serif" font-size="107.49px" letter-spacing="0px" stroke-width="1px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><tspan x="160.63066" y="-365.56628" font-family="Arial" font-weight="bold" stroke-width="1px"><tspan fill="#ff0000">jp</tspan><tspan fill="#ffffff">presents</tspan></tspan></text>
+<text id="a" x="284.26901" y="-389.61743" fill="#ffffff" font-family="Arial" font-size="40px" letter-spacing="0px" stroke-width="1px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><tspan x="284.26901" y="-389.61743" font-family="Arial" font-weight="bold"><tspan fill="#ff0000">lost</tspan> in space</tspan></text>
+<use width="100%" height="100%" filter="url(#x)" xlink:href="#b"/>
+<use width="100%" height="100%" filter="url(#w)" xlink:href="#a"/>
+</g>
+</g>
+<path d="m14.795-706.64 41.373 48.435-7.6398-1.4852-14.918-2.9 0.14589 19.542-0.14589 17.298 14.582-2.8347 7.9758-1.5505-41.373 48.435 46.271-10.211 44.587-24.264 25.09 0.0341-0.0265-3.5631 6.5725-0.0727-0.0899-3.0841-6.5056 0.0632-0.0272-3.6628-11.459 0.0374 19.698-17.747-17.39-23.828-21.974-2.6022-38.475-25.833z" fill="#666" fill-rule="evenodd" stroke="#4d4d4d" stroke-width="1.8898"/>
+<path d="m13.311-707.12 20.688 23.449-11.279-2.123 1.4434 8.918-1.4434 8.918 11.279-2.123-20.688 23.449 23.137-4.9434 25.357-13.805 11.811 0.20899 0.08984-1.3691-8.123-0.89649 9.7871-9.4394-9.7871-9.4395 8.123-0.89648-0.08984-1.3691-11.811 0.20898-25.357-13.807z" opacity="0" stroke-width="1px"/>
+<path d="m118.51-663.74 10.625 12.75h-29.5l1-15.75z" fill="#8ca3a6" fill-rule="evenodd" stroke="#4d4d4d" stroke-width="1px"/>
+<path d="m26.783-649.1v10.571l6.8175-2.3633v-6z" fill="#333" fill-rule="evenodd" stroke="#4d4d4d" stroke-width="1.8898"/>
+<path d="m26.721-664.83v10.571l6.8175-2.3633v-6z" fill="#333" fill-rule="evenodd" stroke="#4d4d4d" stroke-width="1.8898"/>
+<path d="m26.783-633.91v10.571l6.8175-2.3633v-6z" fill="#333" fill-rule="evenodd" stroke="#4d4d4d" stroke-width="1.8898"/>
+<text transform="matrix(.86771 -.49233 .50778 .86435 0 0)" x="360.24817" y="-485.50125" fill="#999999" font-family="sans-serif" font-size="9.6248px" letter-spacing="0px" stroke-width="1px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><tspan x="360.24817" y="-485.50125" fill="#999999" font-family="Arial" font-weight="bold" stroke-width="1px">JP - L051</tspan></text>
+<ellipse transform="matrix(.76752 0 0 .94587 41.61 -33.944)" cx="171.38" cy="-610.8" rx="24.375" ry="17.125" color="#000000" color-rendering="auto" fill="#2aaaff" filter="url(#t)" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="isolation:auto;mix-blend-mode:normal"/>
+<ellipse id="j" cx="315.34" cy="-679.83" rx="46.139" ry="27.4" color="#000000" color-rendering="auto" fill="#999" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke="#333" stroke-dashoffset=".8" stroke-width="1.8898" style="isolation:auto;mix-blend-mode:normal"/>
+<path d="m284.6-700.47c19.958 5.0908 39.884 6.35 60.507-0.5221 2.3781 1.3807 5.2403 2.9077 8.3522 5.5221-28.803 8.2329-53.403 6.1733-76.912 0.50824 2.4287-2.3767 5.645-4.4014 8.0524-5.5082z" fill="#8787de" fill-rule="evenodd" stroke="#333" stroke-width="1.5"/>
+<path d="m292.89-698.65c4.6446 0.89721 9.4958 1.7358 14.969 2.1222l-0.64997 6.2648c-5.6187-0.2235-10.942-0.96456-16.232-1.7624z" color="#000000" color-rendering="auto" fill="#87de87" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke="#333" stroke-dashoffset=".8" stroke-width="1.5" style="isolation:auto;mix-blend-mode:normal"/>
+<path d="m321.7-696.44c6.5153-0.42583 9.3174-1.1362 14.882-2.2212l0.68101 6.8482c-5.5491 1.0216-10.978 1.423-15.66 1.6625z" color="#000000" color-rendering="auto" fill="#87de87" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke="#333" stroke-dashoffset=".8" stroke-width="1.5" style="isolation:auto;mix-blend-mode:normal"/>
+<use transform="translate(8e-6 64)" width="100%" height="100%" xlink:href="#j"/>
+<path d="m284.6-636.47c19.958 5.0908 39.884 6.35 60.507-0.5221 2.3781 1.3807 5.2403 2.9077 8.3522 5.5221-28.803 8.2329-53.403 6.1733-76.912 0.50824 2.4287-2.3767 5.645-4.4014 8.0524-5.5082z" fill="#87de87" fill-rule="evenodd" stroke="#333" stroke-width="1.5"/>
+<path d="m292.89-634.65c4.6446 0.89721 9.4958 1.7358 14.969 2.1222l-0.64997 6.2648c-5.6187-0.2235-10.942-0.96456-16.232-1.7624z" color="#000000" color-rendering="auto" fill="#8787de" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke="#333" stroke-dashoffset=".8" stroke-width="1.5" style="isolation:auto;mix-blend-mode:normal"/>
+<path d="m321.7-632.44c6.5153-0.42583 9.3174-1.1362 14.882-2.2212l0.68101 6.8482c-5.5491 1.0216-10.978 1.423-15.66 1.6625z" color="#000000" color-rendering="auto" fill="#8787de" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke="#333" stroke-dashoffset=".8" stroke-width="1.5" style="isolation:auto;mix-blend-mode:normal"/>
+<path transform="matrix(.49812 0 0 .51566 116.68 -405.88)" d="m224.41-505.42 4.0912-12.065-7.6192-10.21 12.738 0.16282 7.3558-10.401 3.7816 12.165 12.165 3.7816-10.401 7.3558 0.16282 12.738-10.21-7.6192z" color="#000000" color-rendering="auto" fill="#fff" filter="url(#q)" image-rendering="auto" opacity=".666" shape-rendering="auto" solid-color="#000000" style="isolation:auto;mix-blend-mode:normal"/>
+<rect transform="matrix(-.85479 0 0 1.1718 577.44 116.63)" x="141.73" y="-681.15" width="59.655" height="12.211" rx="13.767" ry="2.8362" color="#000000" color-rendering="auto" fill="#ff2a2a" filter="url(#u)" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="isolation:auto;mix-blend-mode:normal"/>
+<path transform="matrix(-1.3198 0 0 .72985 1001.1 -182.78)" d="m437.2-680.6 7.8131 3.25c3.7163 1.5459 7.2654 0.69306 7.2654 1.554v2.9978c0 0.86088-3.5491 8e-3 -7.2654 1.5539l-7.8131 3.25c-7.8256 3.2552-15.015-1.4309-15.015-3.2082v-6.1891c0-1.7763 7.2115-6.4545 15.015-3.2083z" color="#000000" color-rendering="auto" fill="#ff2a2a" filter="url(#r)" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="isolation:auto;mix-blend-mode:normal"/>
+<ellipse cx="427.46" cy="-611.66" rx="30.932" ry="30.727" color="#000000" color-rendering="auto" fill="url(#g)" image-rendering="auto" opacity=".906" shape-rendering="auto" solid-color="#000000" style="isolation:auto;mix-blend-mode:normal"/>
+<ellipse cx="432.3" cy="-603.17" rx="18.87" ry="17.977" color="#000000" color-rendering="auto" fill="url(#f)" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="isolation:auto;mix-blend-mode:normal"/>
+<ellipse cx="418.83" cy="-610.37" rx="18.87" ry="17.977" color="#000000" color-rendering="auto" fill="url(#e)" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="isolation:auto;mix-blend-mode:normal"/>
+<ellipse cx="433.02" cy="-621.06" rx="18.87" ry="17.977" color="#000000" color-rendering="auto" fill="url(#d)" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="isolation:auto;mix-blend-mode:normal"/>
+<g transform="matrix(1.2271 0 0 1.2797 -141.69 51.443)" fill="#ffffff" font-family="Arial" font-size="40px" font-weight="bold" letter-spacing="0px" stroke-width=".79802px" text-anchor="middle" word-spacing="0px">
+<text x="387.88748" y="-129.34596" filter="url(#aa)" text-align="center" style="line-height:125%" xml:space="preserve"><tspan x="393.43436" y="-129.34596" fill="#ffffff" text-align="center">you are now really </tspan><tspan x="387.88748" y="-79.345963" text-align="center"><tspan fill="#ff0000" stroke-width=".79802px" text-align="center" text-anchor="middle">lost</tspan> in space</tspan><tspan x="387.88748" y="-29.345963" font-size="18.667px" text-align="center">press any key to restart</tspan></text>
+<text x="387.88748" y="-129.34596" text-align="center" style="line-height:125%" xml:space="preserve"><tspan x="393.43436" y="-129.34596" fill="#ffffff" text-align="center">you are now really </tspan><tspan x="387.88748" y="-79.345963" text-align="center"><tspan fill="#ff0000" stroke-width=".79802px" text-align="center" text-anchor="middle">lost</tspan> in space</tspan><tspan x="387.88748" y="-29.345963" font-size="18.667px" text-align="center">press space to restart</tspan></text>
+</g>
+<rect x="463.54" y="-703.86" width="57.983" height="56.569" rx="4" ry="20" color="#000000" color-rendering="auto" fill="#666" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke="#4d4d4d" stroke-width="1.8898" style="isolation:auto;mix-blend-mode:normal"/>
+<path d="m492.26-698.03-23.776 22.451 15.851-0.17678-7.9255 20.329h31.702l-7.9255-19.799 15.851 0.35356z" fill="#999" fill-rule="evenodd" stroke="#4d4d4d" stroke-width="1.8898"/>
+<ellipse id="o" cx="562.19" cy="-642.95" rx="13.789" ry="48.437" color="#000000" color-rendering="auto" fill="#999" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke="#333" stroke-dashoffset=".8" stroke-width="1.8898" style="isolation:auto;mix-blend-mode:normal"/>
+<rect x="532.49" y="-679.72" width="30.406" height="12.374" rx="4" ry="12.374" color="#000000" color-rendering="auto" fill="#ff2828" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke="#333" stroke-dashoffset=".8" stroke-width="1.8898" style="isolation:auto;mix-blend-mode:normal"/>
+<rect id="c" transform="matrix(.57185 .82036 -.56033 .82827 0 0)" x="159.51" y="-1000.7" width="67.582" height="67.947" color="#000000" color-rendering="auto" fill="#999" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke="#333" stroke-dashoffset=".82809" stroke-width="1.9561" style="font-variant-east_asian:normal;isolation:auto;mix-blend-mode:normal"/>
+<path id="n" d="m652.13-586.17v-44.5" fill="#999" fill-rule="evenodd" stroke="#333" stroke-dashoffset=".8" stroke-width="1.8898"/>
+<path id="m" d="m652.13-652.17v-44.5" fill="#999" fill-rule="evenodd" stroke="#333" stroke-dashoffset=".8" stroke-width="1.8898"/>
+<path id="l" d="m662.26-642.67h28.5" fill="#999" fill-rule="evenodd" stroke="#333" stroke-dashoffset=".8" stroke-width="1.8898"/>
+<path id="k" d="m614.38-642.67h27.5" fill="#999" fill-rule="evenodd" stroke="#333" stroke-dashoffset=".8" stroke-width="1.8898"/>
+<ellipse cx="652.19" cy="-641.77" rx="9.7227" ry="10.253" color="#000000" color-rendering="auto" fill="#ff2828" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke="#333" stroke-dashoffset=".8" stroke-width="1.8898" style="font-variant-east_asian:normal;isolation:auto;mix-blend-mode:normal"/>
+<use transform="translate(5.1484e-5 128)" width="100%" height="100%" xlink:href="#o"/>
+<rect x="532.49" y="-551.72" width="30.406" height="12.374" rx="4" ry="12.374" color="#000000" color-rendering="auto" fill="#ff8080" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke="#333" stroke-dashoffset=".8" stroke-width="1.8898" style="isolation:auto;mix-blend-mode:normal"/>
+<use transform="translate(5.1484e-5 128)" width="100%" height="100%" xlink:href="#c"/>
+<use transform="translate(5.1484e-5 128)" width="100%" height="100%" xlink:href="#n"/>
+<use transform="translate(5.1484e-5 128)" width="100%" height="100%" xlink:href="#m"/>
+<use transform="translate(5.1484e-5 128)" width="100%" height="100%" xlink:href="#l"/>
+<use transform="translate(5.1484e-5 128)" width="100%" height="100%" xlink:href="#k"/>
+<ellipse cx="652.19" cy="-513.77" rx="9.7227" ry="10.253" color="#000000" color-rendering="auto" fill="#ff8080" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke="#333" stroke-dashoffset=".8" stroke-width="1.8898" style="isolation:auto;mix-blend-mode:normal"/>
+<ellipse cx="96.755" cy="-497.09" rx="84.499" ry="83.085" color="#000000" color-rendering="auto" fill="url(#i)" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="isolation:auto;mix-blend-mode:normal"/>
+<ellipse transform="matrix(1.3292 0 0 1.3275 -140.9 179.54)" cx="428.03" cy="-548.13" rx="10.664" ry="10.783" color="#000000" color-rendering="auto" fill="#fd0000" filter="url(#z)" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="isolation:auto;mix-blend-mode:normal"/>
+<text x="174.8907" y="-20.048861" fill="#ffffff" font-family="sans-serif" font-size="16px" letter-spacing="0px" stroke-width="1px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><tspan x="174.8907" y="-20.048861" fill="#ffffff" font-family="Arial" font-size="16px" font-weight="bold">tweet your best score @jppresents for praise</tspan></text>
+<text x="174.8907" y="-20.048861" fill="#ffffff" filter="url(#y)" font-family="sans-serif" font-size="16px" letter-spacing="0px" stroke-width="1px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><tspan x="174.8907" y="-20.048861" fill="#ffffff" font-family="Arial" font-size="16px" font-weight="bold">tweet your best score @jppresents for praise</tspan></text>
+</g>
+</svg>
