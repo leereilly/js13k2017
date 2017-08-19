@@ -15,8 +15,16 @@ declare const ENEMY_TYPE_SHOOTER_BLUE = 5;
 declare const ENEMY_TYPE_DIAMOND = 6;
 declare const ENEMY_TYPE_DIAMOND_BLUE = 7;
 declare const ENEMY_TYPE_DIAMOND_YELLOW = 8;
-declare const ATTACK_PATTERN: number[];
 declare const ATTACK_VECTORS: number[][];
+declare const SQUADS: number[][];
+declare class AttackPatternBuilder {
+    addSquads(): void;
+    pattern: any;
+    curTime: number;
+    constructor();
+    addSquad(timeOffset: number, squad: number): void;
+    compare(a: any, b: any): number;
+}
 declare class Point {
     x: number;
     y: number;
@@ -150,6 +158,7 @@ declare class EnemyManager {
     enemies: Enemy[];
     time: number;
     currentAttack: number;
+    attackPattern: any;
     constructor(engine: Engine, gameObjects: GameObject[]);
     reset(): void;
     update(player: Player): void;

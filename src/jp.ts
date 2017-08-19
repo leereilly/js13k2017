@@ -26,54 +26,9 @@ const ENEMY_TYPE_DIAMOND = 6;
 const ENEMY_TYPE_DIAMOND_BLUE = 7;
 const ENEMY_TYPE_DIAMOND_YELLOW = 8;
 
-//time, type, attackvector
-const ATTACK_PATTERN = [
-    0, ENEMY_TYPE_UFO_ORANGE, 11,
-    50, ENEMY_TYPE_UFO_YELLOW, 10,
-    20, ENEMY_TYPE_UFO_BLUE, 13,
-    30, ENEMY_TYPE_UFO_BLUE, 10,
-    40, ENEMY_TYPE_UFO_BLUE, 9,
-    50, ENEMY_TYPE_UFO_BLUE, 10,
-
-    10, ENEMY_TYPE_DIAMOND_YELLOW, 1,
-    10, ENEMY_TYPE_DIAMOND_BLUE, 2,
-    10, ENEMY_TYPE_SHOOTER_BLUE, 3,
-    30 + 0, ENEMY_TYPE_DIAMOND, 4,
-    30 + 20, ENEMY_TYPE_SHOOTER, 5,
-
-
-    100, ENEMY_TYPE_UFO, 2,
-    120, ENEMY_TYPE_UFO, 2,
-    140, ENEMY_TYPE_UFO_BLUE, 2,
-    300 + 0, ENEMY_TYPE_UFO, 4,
-    300 + 20, ENEMY_TYPE_UFO, 4,
-    300 + 40, ENEMY_TYPE_UFO_BLUE, 4,
-    500 + 0, ENEMY_TYPE_UFO, 3,
-    500 + 20, ENEMY_TYPE_UFO, 3,
-    500 + 40, ENEMY_TYPE_UFO_BLUE, 3,
-    700, ENEMY_TYPE_UFO, 2,
-    700, ENEMY_TYPE_UFO, 3,
-    700, ENEMY_TYPE_UFO_BLUE, 4,
-    900, ENEMY_TYPE_UFO, 2,
-    900, ENEMY_TYPE_UFO_BLUE, 3,
-    900, ENEMY_TYPE_UFO, 4,
-    1100, ENEMY_TYPE_UFO_BLUE, 2,
-    1100, ENEMY_TYPE_UFO, 3,
-    1100, ENEMY_TYPE_UFO, 4,
-    1300, ENEMY_TYPE_UFO, 0,
-    1330, ENEMY_TYPE_UFO, 0,
-    1360, ENEMY_TYPE_UFO_BLUE, 0,
-    1500 + 0, ENEMY_TYPE_UFO, 1,
-    1500 + 30, ENEMY_TYPE_UFO, 1,
-    1500 + 60, ENEMY_TYPE_UFO_BLUE, 1,
-    1700 + 0, ENEMY_TYPE_UFO, 0,
-    1700 + 30, ENEMY_TYPE_UFO, 0,
-    1700 + 60, ENEMY_TYPE_UFO_BLUE, 0,
-];
-
 const ATTACK_VECTORS = [
-    /*  0*/ [1920, 100, 100, 540, 1820, 500, 100, 1080], //z
-    /*  1*/ [1920, 980, 100, 540, 1820, 500, 100, 0], //inverted z
+    /*  0*/ [1920, 100, 100, 580, 1820, 580, 100, 1080], //z
+    /*  1*/ [1920, 980, 100, 500, 1820, 500, 100, 0], //inverted z
     /*  2*/ [1920, 100, 0, 100], //straight top
     /*  3*/ [1920, 500, 0, 500], //straight center
     /*  4*/ [1920, 950, 0, 950], //straight bottom
@@ -88,6 +43,68 @@ const ATTACK_VECTORS = [
     /* 12*/ [0, 500, 1920, 500], //straight center reverse
     /* 13*/ [0, 950, 1920, 950], //straight bottom reverse
 ];
+
+
+const SQUADS = [
+    /*  0*/[ 20, ENEMY_TYPE_UFO, 2, ENEMY_TYPE_UFO, 2, ENEMY_TYPE_UFO_BLUE, 2], //3 ufo top
+    /*  1*/[ 20, ENEMY_TYPE_UFO, 3, ENEMY_TYPE_UFO, 3, ENEMY_TYPE_UFO_BLUE, 3], //3 ufo center
+    /*  2*/[ 20, ENEMY_TYPE_UFO, 4, ENEMY_TYPE_UFO, 4, ENEMY_TYPE_UFO_BLUE, 4], //3 ufo bottom
+    /*  3*/[ 0,  ENEMY_TYPE_UFO, 2, ENEMY_TYPE_UFO, 3, ENEMY_TYPE_UFO_BLUE, 4], //3 ufo top to bottom (goodie bottom)
+    /*  4*/[ 0,  ENEMY_TYPE_UFO_BLUE, 2, ENEMY_TYPE_UFO, 3, ENEMY_TYPE_UFO, 4], //3 ufo top to bottom (goodie top)
+    /*  5*/[ 0,  ENEMY_TYPE_UFO, 2, ENEMY_TYPE_UFO_BLUE, 3, ENEMY_TYPE_UFO, 4], //3 ufo top to bottom (goodie middle)
+    /*  6*/[ 30, ENEMY_TYPE_UFO, 1, ENEMY_TYPE_UFO, 1,ENEMY_TYPE_UFO_BLUE, 1], // 3 ufo z
+    /*  7*/[ 30, ENEMY_TYPE_UFO, 0, ENEMY_TYPE_UFO, 0,ENEMY_TYPE_UFO_BLUE, 0], // 3 ufo z reverse
+
+    /*  8*/[ 0, ENEMY_TYPE_SHOOTER, 5, ENEMY_TYPE_SHOOTER, 6], // 2 shooter top & bottom
+];
+
+class AttackPatternBuilder {
+    addSquads() {
+ 
+        //ufo beginning
+        this.addSquad(0, 0);
+        this.addSquad(200, 2);
+        this.addSquad(200, 1);
+
+        this.addSquad(200, 3);
+        this.addSquad(200, 5);
+        this.addSquad(200, 4);
+
+        this.addSquad(200, 6);
+        this.addSquad(200, 7);
+
+        this.addSquad(200, 6);
+        this.addSquad(0, 7);
+        //ufo beginning end
+
+        this.addSquad(0, 8);
+    }
+
+    pattern;
+    curTime: number;
+
+    constructor() {
+        this.pattern = [];
+        this.curTime = 0;
+        this.addSquads();
+        this.pattern.sort(this.compare)
+    }
+
+    addSquad(timeOffset: number, squad: number) {
+        this.curTime += timeOffset;
+        let count = (SQUADS[squad].length - 1)/2;
+        let timeBetween = SQUADS[squad][0];
+        for (let i = 0; i < count; i++) {
+            let type = SQUADS[squad][1 + i * 2];
+            let vector = SQUADS[squad][1 + i * 2 + 1];
+            this.pattern.push([this.curTime + timeBetween * i, type, vector]);
+        }
+    }
+
+    compare(a, b): number {
+        return a[0] - b[0];
+    }
+}
 
 
 class Point {
@@ -909,11 +926,15 @@ class EnemyManager {
     time: number;
     currentAttack: number;
 
+    attackPattern;
+
     constructor(engine: Engine, gameObjects: GameObject[]) {
         this.engine = engine;
         this.gameObjects = gameObjects;
         this.enemies = [];
         this.reset();
+        let builder = new AttackPatternBuilder();
+        this.attackPattern = builder.pattern;
     }
 
     reset() {
@@ -927,10 +948,10 @@ class EnemyManager {
     update(player: Player) {
         this.time++;
 
-        if (this.currentAttack * 3 < ATTACK_PATTERN.length) {
-            let nextAttackTime = ATTACK_PATTERN[this.currentAttack * 3];
+        if (this.currentAttack < this.attackPattern.length) {
+            let nextAttackTime = this.attackPattern[this.currentAttack][0];
             if (this.time >= nextAttackTime) {
-                this.spawn(ATTACK_PATTERN[this.currentAttack * 3 + 1], ATTACK_PATTERN[this.currentAttack * 3 + 2]);
+                this.spawn(this.attackPattern[this.currentAttack][1], this.attackPattern[this.currentAttack][2]);
                 this.currentAttack++;
             }
         } else {
@@ -1313,7 +1334,7 @@ class Game {
     }
 
     playShotSound() {
-        if (navigator.userAgent.indexOf("Firefox") != -1) {
+        if (navigator.userAgent.indexOf("Firefox") != -1 || navigator.userAgent.indexOf("Edge") != -1) {
             return;
         }
         if (this.context == null) {
@@ -1337,7 +1358,7 @@ class Game {
     }
 
     playExplosionSound() {
-        if (navigator.userAgent.indexOf("Firefox") != -1) {
+        if (navigator.userAgent.indexOf("Firefox") != -1 || navigator.userAgent.indexOf("Edge") != -1) {
             return;
         }
 
