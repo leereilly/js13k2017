@@ -46,21 +46,53 @@ const ATTACK_VECTORS = [
 
 
 const SQUADS = [
-    /*  0*/[ 20, ENEMY_TYPE_UFO, 2, ENEMY_TYPE_UFO, 2, ENEMY_TYPE_UFO_BLUE, 2], //3 ufo top
-    /*  1*/[ 20, ENEMY_TYPE_UFO, 3, ENEMY_TYPE_UFO, 3, ENEMY_TYPE_UFO_BLUE, 3], //3 ufo center
-    /*  2*/[ 20, ENEMY_TYPE_UFO, 4, ENEMY_TYPE_UFO, 4, ENEMY_TYPE_UFO_BLUE, 4], //3 ufo bottom
-    /*  3*/[ 0,  ENEMY_TYPE_UFO, 2, ENEMY_TYPE_UFO, 3, ENEMY_TYPE_UFO_BLUE, 4], //3 ufo top to bottom (goodie bottom)
-    /*  4*/[ 0,  ENEMY_TYPE_UFO_BLUE, 2, ENEMY_TYPE_UFO, 3, ENEMY_TYPE_UFO, 4], //3 ufo top to bottom (goodie top)
-    /*  5*/[ 0,  ENEMY_TYPE_UFO, 2, ENEMY_TYPE_UFO_BLUE, 3, ENEMY_TYPE_UFO, 4], //3 ufo top to bottom (goodie middle)
-    /*  6*/[ 30, ENEMY_TYPE_UFO, 1, ENEMY_TYPE_UFO, 1,ENEMY_TYPE_UFO_BLUE, 1], // 3 ufo z
-    /*  7*/[ 30, ENEMY_TYPE_UFO, 0, ENEMY_TYPE_UFO, 0,ENEMY_TYPE_UFO_BLUE, 0], // 3 ufo z reverse
+    /*  0*/[20, ENEMY_TYPE_UFO, 2, ENEMY_TYPE_UFO, 2, ENEMY_TYPE_UFO_BLUE, 2], //3 ufo top
+    /*  1*/[20, ENEMY_TYPE_UFO, 3, ENEMY_TYPE_UFO, 3, ENEMY_TYPE_UFO_BLUE, 3], //3 ufo center
+    /*  2*/[20, ENEMY_TYPE_UFO, 4, ENEMY_TYPE_UFO, 4, ENEMY_TYPE_UFO_BLUE, 4], //3 ufo bottom
+    /*  3*/[0, ENEMY_TYPE_UFO, 2, ENEMY_TYPE_UFO, 3, ENEMY_TYPE_UFO_BLUE, 4], //3 ufo top to bottom (goodie bottom)
+    /*  4*/[0, ENEMY_TYPE_UFO_BLUE, 2, ENEMY_TYPE_UFO, 3, ENEMY_TYPE_UFO, 4], //3 ufo top to bottom (goodie top)
+    /*  5*/[0, ENEMY_TYPE_UFO, 2, ENEMY_TYPE_UFO_BLUE, 3, ENEMY_TYPE_UFO, 4], //3 ufo top to bottom (goodie middle)
+    /*  6*/[30, ENEMY_TYPE_UFO, 1, ENEMY_TYPE_UFO, 1, ENEMY_TYPE_UFO_BLUE, 1], // 3 ufo z
+    /*  7*/[30, ENEMY_TYPE_UFO, 0, ENEMY_TYPE_UFO, 0, ENEMY_TYPE_UFO_BLUE, 0], // 3 ufo z reverse
 
-    /*  8*/[ 0, ENEMY_TYPE_SHOOTER, 5, ENEMY_TYPE_SHOOTER, 6], // 2 shooter top & bottom
+    /*  8*/[0, ENEMY_TYPE_SHOOTER, 5, ENEMY_TYPE_SHOOTER, 6], // 2 shooter top & bottom
+    /*  9*/[20, ENEMY_TYPE_SHOOTER, 2, ENEMY_TYPE_SHOOTER, 3, ENEMY_TYPE_SHOOTER, 4], // 2 shooter top, bottom, center
+    /* 10*/[20, ENEMY_TYPE_UFO, 5, ENEMY_TYPE_UFO, 5, ENEMY_TYPE_UFO, 5, ENEMY_TYPE_UFO_BLUE, 5, ENEMY_TYPE_SHOOTER, 5], // shooter & ufo
+
+    /* 11*/[50, ENEMY_TYPE_DIAMOND, 3, ENEMY_TYPE_DIAMOND, 4, ENEMY_TYPE_DIAMOND, 2], // diamonds
+
+    /* 12*/[50, ENEMY_TYPE_DIAMOND, 4, ENEMY_TYPE_DIAMOND, 2, ENEMY_TYPE_DIAMOND, 3], // diamonds
+
+    /* 13*/[30, ENEMY_TYPE_UFO_YELLOW, 7, ENEMY_TYPE_UFO_YELLOW, 7, ENEMY_TYPE_UFO_YELLOW, 7, ENEMY_TYPE_UFO_YELLOW, 7, ENEMY_TYPE_UFO_YELLOW, 7, ENEMY_TYPE_DIAMOND_BLUE, 7], // 6 ufo bounce top
+    /* 14 */[30, ENEMY_TYPE_UFO_YELLOW, 8, ENEMY_TYPE_UFO_YELLOW, 8, ENEMY_TYPE_UFO_YELLOW, 8, ENEMY_TYPE_UFO_YELLOW, 8, ENEMY_TYPE_UFO_YELLOW, 8, ENEMY_TYPE_DIAMOND_BLUE, 8], // 6 ufo bounce bottom
+
+    /* 15*/[30, ENEMY_TYPE_UFO_YELLOW, 9, ENEMY_TYPE_UFO_YELLOW, 9, ENEMY_TYPE_UFO_YELLOW, 9, ENEMY_TYPE_UFO_YELLOW, 9, ENEMY_TYPE_UFO_YELLOW, 9, ENEMY_TYPE_DIAMOND_BLUE, 9], // 6 ufo bounce top
+    /* 16*/[30, ENEMY_TYPE_UFO_YELLOW, 10, ENEMY_TYPE_UFO_YELLOW, 10, ENEMY_TYPE_UFO_YELLOW, 10, ENEMY_TYPE_UFO_YELLOW, 10, ENEMY_TYPE_UFO_YELLOW, 10, ENEMY_TYPE_DIAMOND_BLUE, 10], // 6 ufo bounce bottom
+
+    /* 17*/[50, ENEMY_TYPE_DIAMOND_BLUE, 0, ENEMY_TYPE_DIAMOND, 0, ENEMY_TYPE_DIAMOND, 0], // diamonds
+    /* 18*/[50, ENEMY_TYPE_DIAMOND_YELLOW, 1, ENEMY_TYPE_DIAMOND, 1, ENEMY_TYPE_DIAMOND, 1], // diamonds
+
+    /* 19*/[0, ENEMY_TYPE_UFO_YELLOW, 11, ENEMY_TYPE_UFO_YELLOW, 12, ENEMY_TYPE_UFO_YELLOW, 13], //reverse
+    /* 20*/[0, ENEMY_TYPE_UFO_YELLOW, 2, ENEMY_TYPE_UFO_YELLOW, 3, ENEMY_TYPE_UFO_YELLOW, 4], // note reverse
+
+    /* 21*/[30, ENEMY_TYPE_SHOOTER_BLUE, 7, ENEMY_TYPE_SHOOTER, 7, ENEMY_TYPE_SHOOTER, 7, ENEMY_TYPE_SHOOTER, 7, ENEMY_TYPE_SHOOTER, 7, ENEMY_TYPE_SHOOTER, 7], // 6 ufo bounce top
+    /* 22*/[30, ENEMY_TYPE_SHOOTER_BLUE, 10, ENEMY_TYPE_SHOOTER, 10, ENEMY_TYPE_SHOOTER, 10, ENEMY_TYPE_SHOOTER, 10, ENEMY_TYPE_SHOOTER, 10, ENEMY_TYPE_SHOOTER, 10], // 6 ufo bounce top
+
+    /* 23*/[50, ENEMY_TYPE_DIAMOND_YELLOW, 1, ENEMY_TYPE_DIAMOND_YELLOW, 1, ENEMY_TYPE_DIAMOND_YELLOW, 1], // diamonds
+    /* 24*/[50, ENEMY_TYPE_UFO_ORANGE, 8, ENEMY_TYPE_UFO_ORANGE, 8, ENEMY_TYPE_UFO_ORANGE, 8], // diamonds
+
+    /* 25*/[50, ENEMY_TYPE_UFO_ORANGE, 9, ENEMY_TYPE_UFO_ORANGE, 9, ENEMY_TYPE_UFO_ORANGE, 9, ENEMY_TYPE_DIAMOND_YELLOW, 9], // diamonds
+
+    /* 26*/[0, ENEMY_TYPE_UFO_ORANGE, 2, ENEMY_TYPE_UFO_ORANGE, 12, ENEMY_TYPE_UFO_ORANGE, 4, ENEMY_TYPE_DIAMOND_YELLOW, 7], // diamonds
+    /* 27*/[10, ENEMY_TYPE_UFO_ORANGE, 3, ENEMY_TYPE_UFO_ORANGE, 3, ENEMY_TYPE_DIAMOND_YELLOW, 3, ENEMY_TYPE_UFO_BLUE, 3], // diamonds
+    /* 28*/[10, ENEMY_TYPE_UFO_ORANGE, 2, ENEMY_TYPE_UFO_ORANGE, 2, ENEMY_TYPE_DIAMOND_YELLOW, 2, ENEMY_TYPE_UFO_BLUE, 2], // diamonds
+    /* 29*/[10, ENEMY_TYPE_UFO_ORANGE, 4, ENEMY_TYPE_UFO_ORANGE, 4, ENEMY_TYPE_DIAMOND_YELLOW, 4, ENEMY_TYPE_UFO_BLUE, 4], // diamonds
+
 ];
 
 class AttackPatternBuilder {
     addSquads() {
- 
+
         //ufo beginning
         this.addSquad(0, 0);
         this.addSquad(200, 2);
@@ -74,25 +106,76 @@ class AttackPatternBuilder {
         this.addSquad(200, 7);
 
         this.addSquad(200, 6);
-        this.addSquad(0, 7);
-        //ufo beginning end
+        this.addSquad(200, 7);
 
-        this.addSquad(0, 8);
+        this.addSquad(200, 6);
+        this.addSquad(0, 7);
+
+        //shooter & ufos
+
+        this.addSquad(300, 10);
+        this.addSquad(200, 9);
+        this.addSquad(200, 8);
+        this.addSquad(100, 8);
+        this.addSquad(200, 9);
+        this.addSquad(300, 10);
+
+        //now with diamonds
+        this.addSquad(300, 11);
+        this.addSquad(300, 12);
+        this.addSquad(300, 13);
+        this.addSquad(300, 12);
+        this.addSquad(300, 14);
+        this.addSquad(300, 11);
+        this.addSquad(300, 15);
+        this.addSquad(300, 12);
+        this.addSquad(300, 16);
+
+        this.addSquad(300, 17);
+        this.addSquad(300, 18);
+
+        this.addSquad(300, 20);
+        this.addSquad(300, 19);
+
+        for (let i = 0; i < 20; i++) {
+            this.addSquad(10 + Math.floor(Math.random() * 300), 5 + Math.floor(Math.random()* (15)));
+        }
+
+        this.addSquad(300, 21);
+        this.addSquad(300, 22);
+        this.addSquad(300, 23);
+        this.addSquad(300, 24);
+        this.addSquad(300, 25);
+        this.addSquad(300, 26);
+        this.addSquad(300, 27);
+        this.addSquad(300, 28);
+        this.addSquad(300, 29);
+
+        for (let i = 0; i < 100; i++) {
+            this.addSquad(10 + Math.floor(Math.random() * 300), 10 + Math.floor(Math.random()* (SQUADS.length - 11)));
+        }
     }
 
     pattern;
     curTime: number;
+    skip: number;
+
 
     constructor() {
         this.pattern = [];
         this.curTime = 0;
+        this.skip = 0;
         this.addSquads();
         this.pattern.sort(this.compare)
     }
 
+    skipHere() {
+        this.skip = this.pattern.length;
+    }
+
     addSquad(timeOffset: number, squad: number) {
         this.curTime += timeOffset;
-        let count = (SQUADS[squad].length - 1)/2;
+        let count = (SQUADS[squad].length - 1) / 2;
         let timeBetween = SQUADS[squad][0];
         for (let i = 0; i < count; i++) {
             let type = SQUADS[squad][1 + i * 2];
@@ -168,17 +251,29 @@ class Engine {
 
         //recolor copy sprites on the sprite sheet
         //blue ufo, yellow ufo, orange ufo
-        this.recolorCopy(this.spriteCanvasCtx, 4 * 64, 0, 64 * 2, 64 * 2, [{r: 85, g: 153, b: 255}, {r: 255, g: 204, b: 0}, {r: 255, g: 100, b: 55} ]);
+        this.recolorCopy(this.spriteCanvasCtx, 4 * 64, 0, 64 * 2, 64 * 2, [{r: 85, g: 153, b: 255}, {
+            r: 255,
+            g: 204,
+            b: 0
+        }, {r: 255, g: 100, b: 55}]);
 
         //shooter blue
         this.recolorCopy(this.spriteCanvasCtx, 8 * 64, 0, 64, 64 * 4, [{r: 85, g: 153, b: 255}]);
 
         //diamonds blue, yellow
-        this.recolorCopy(this.spriteCanvasCtx, 9 * 64, 0, 2 * 64, 64 * 4, [{r: 85, g: 153, b: 255}, {r: 255, g: 204, b: 0}]);
+        this.recolorCopy(this.spriteCanvasCtx, 9 * 64, 0, 2 * 64, 64 * 4, [{r: 85, g: 153, b: 255}, {
+            r: 255,
+            g: 204,
+            b: 0
+        }]);
 
         //goodies
         //yellow, blue, green, white
-        this.recolorCopy(this.spriteCanvasCtx, 7 * 64, 0, 64, 64, [{r: 255, g: 204, b: 0}, {r: 42, g: 170, b: 255}, {r: 0, g: 190, b: 0}, {r: 255, g: 255, b: 255}]);
+        this.recolorCopy(this.spriteCanvasCtx, 7 * 64, 0, 64, 64, [{r: 255, g: 204, b: 0}, {
+            r: 42,
+            g: 170,
+            b: 255
+        }, {r: 0, g: 190, b: 0}, {r: 255, g: 255, b: 255}]);
 
 
         document.onkeydown = this.keyDown.bind(this);
@@ -410,9 +505,9 @@ class Player extends GameObject {
                         speedY = -4;
                     }
                 }
-                bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, 25, speedY, 200);
+                bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, 25, speedY, 200, 0);
             }
-            for (let i =0 ; i < this.backShotsPerShot; i++) {
+            for (let i = 0; i < this.backShotsPerShot; i++) {
                 let speedY = 0;
                 this.bshots++;
                 if (this.spreadShots) {
@@ -423,7 +518,7 @@ class Player extends GameObject {
                         speedY = -4;
                     }
                 }
-                bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, -25, speedY, 200);
+                bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, -25, speedY, 200, 0);
             }
             this.lastShotTime = frame;
             globalGame.playShotSound();
@@ -436,7 +531,7 @@ class Player extends GameObject {
         this.shieldSprite.pos.x = this.sprite.pos.x;
         this.shieldSprite.pos.y = this.sprite.pos.y;
         this.shieldSprite.visible = this.shield;
-        this.shieldSprite.alpha = 0.75 + Math.sin(frame/10.0) * 0.25;
+        this.shieldSprite.alpha = 0.75 + Math.sin(frame / 10.0) * 0.25;
         if (this.sprite.pos.x > this.engine.getWidth() - this.sprite.width / 2) {
             this.sprite.pos.x = this.engine.getWidth() - this.sprite.width / 2;
         }
@@ -497,48 +592,37 @@ class Player extends GameObject {
         this.weaponUpgrade += 1;
         this.points += 50;
 
-        if (this.weaponUpgrade <= 10 ) {
+        if (this.weaponUpgrade <= 7) {
             globalGame.speak("weapon systems improved!");
         }
 
         if (this.weaponUpgrade == 1) {
-            this.breakBetweenShots = 16;
-        }
-        if (this.weaponUpgrade == 2) {
             this.breakBetweenShots = 13;
         }
-        if (this.weaponUpgrade == 3) {
+        if (this.weaponUpgrade == 2) {
             this.spreadShots = true;
         }
+
         if (this.weaponUpgrade == 3) {
             this.breakBetweenShots = 10;
-        }
-
-        if (this.weaponUpgrade == 4) {
             this.backShotsPerShot = 1;
         }
 
-        if (this.weaponUpgrade == 5) {
+        if (this.weaponUpgrade == 4) {
             this.shotsPerShot = 2;
-        }
-
-        if (this.weaponUpgrade == 6) {
             this.backShotsPerShot = 2;
         }
 
-        if (this.weaponUpgrade == 7) {
+        if (this.weaponUpgrade == 5) {
             this.shotsPerShot = 3;
         }
 
-        if (this.weaponUpgrade == 8) {
+        if (this.weaponUpgrade == 6) {
             this.backShotsPerShot = 3;
-        }
-
-        if (this.weaponUpgrade == 9) {
             this.breakBetweenShots = 8;
         }
 
-        if (this.weaponUpgrade == 10) {
+        if (this.weaponUpgrade == 7) {
             this.breakBetweenShots = 9;
         }
 
@@ -555,22 +639,22 @@ class Player extends GameObject {
     upgradeSpeed() {
         this.points += 50;
         globalGame.speak("speed increased!");
-        this.speedUpgrade += 0.1;
+        this.speedUpgrade += 0.2;
     }
 
     givePoints(amount: number) {
         this.points += amount;
-        globalGame.speak("bonus points!");
+        globalGame.speak(amount + " bonus points!");
     }
 }
 
 class Bullet extends GameObject {
+    type: number;
     lifetime: number;
 
-    constructor(engine: Engine, x: number, y: number) {
+    constructor(engine: Engine, x: number, y: number, type: number) {
         super(engine, x, y);
-        this.sprite.srcX = 64 * 2;
-        this.sprite.srcY = 0;
+        this.setType(type);
     }
 
     update(frame: number) {
@@ -582,6 +666,20 @@ class Bullet extends GameObject {
             this.kill(0);
         }
     }
+
+    setType(type: number) {
+        this.type = type;
+        this.sprite.srcX = 64 * 2;
+        this.sprite.srcY = 0;
+        if (type == 1) {
+            this.sprite.srcX = 64 * 6;
+        }
+        if (type == 2) {
+            this.sprite.srcX = 64 * 6;
+            this.sprite.srcY = 64 * 2;
+        }
+    }
+
 }
 
 
@@ -591,7 +689,7 @@ class BulletManager {
     constructor(game: Game) {
         this.bullets = [];
         for (let i = 0; i < 200; i++) {
-            let b = new Bullet(game.engine, 0, 0);
+            let b = new Bullet(game.engine, 0, 0, 0);
             this.bullets.push(b);
             b.kill(0);
         }
@@ -606,7 +704,7 @@ class BulletManager {
         return null;
     }
 
-    shoot(x: number, y: number, speedX: number, speedY: number, lifetime: number) {
+    shoot(x: number, y: number, speedX: number, speedY: number, lifetime: number, type: number) {
         let bullet = this.getFirstDead();
         if (bullet != null) {
             bullet.lifetime = lifetime;
@@ -616,13 +714,27 @@ class BulletManager {
             bullet.speed.y = speedY;
             bullet.hp = 1;
             bullet.sprite.visible = true;
+            bullet.setType(type);
         }
     }
 
-    update(frame: number, enemyManager: EnemyManager) {
+    reset() {
+        for (let b of this.bullets) {
+            b.kill(0);
+        }
+    }
+
+    update(frame: number, enemyManager: EnemyManager, player: Player) {
         for (let b of this.bullets) {
             b.update(frame);
-            if (b.hp > 0) {
+            if (b.hp > 0 && b.type > 0) {
+                if (Game.distnaceCheck(b.sprite, player.sprite, 12 + 60)) {
+                    player.takeDamage(1);
+                    b.kill(0);
+                }
+            }
+
+            if (b.hp > 0 && b.type == 0) {
                 for (let e of enemyManager.enemies) {
                     if (e.hp > 0) {
                         if (Game.spritesIntersect(b.sprite, e.sprite)) {
@@ -764,6 +876,8 @@ class Enemy extends GameObject {
     attackSubStep: number;
     attackSpeed: number;
 
+    nextShot: number;
+
     setFrame(frame: number) {
         this.frame = frame;
         if (this.type <= ENEMY_TYPE_UFO_ORANGE) {
@@ -830,14 +944,15 @@ class Enemy extends GameObject {
         this.attackVector = attackVector;
         this.attackStep = 0;
         this.attackSubStep = 0;
+        this.nextShot = 10;
 
         this.hp = 1;
 
         if (this.type == ENEMY_TYPE_UFO_YELLOW || this.type == ENEMY_TYPE_DIAMOND || this.type == ENEMY_TYPE_DIAMOND_BLUE) {
-            this.hp = 2;
+            this.hp = 4;
         }
         if (this.type == ENEMY_TYPE_UFO_ORANGE || this.type == ENEMY_TYPE_DIAMOND_YELLOW) {
-            this.hp = 4;
+            this.hp = 8;
         }
 
         this.attackSpeed = this.calcAttackSpeed(attackVector[0], attackVector[1], attackVector[2], attackVector[3]);
@@ -850,7 +965,7 @@ class Enemy extends GameObject {
     }
 
     calcAttackSpeed(x1, y1, x2, y2): number {
-        return this.getSpeed()/(Math.abs(x1 - x2) + Math.abs(y1 - y2));
+        return this.getSpeed() / (Math.abs(x1 - x2) + Math.abs(y1 - y2));
     }
 
     getSpeed(): number {
@@ -858,17 +973,17 @@ class Enemy extends GameObject {
             return 8;
         }
         if (this.type == ENEMY_TYPE_UFO_YELLOW) {
-            return 14;
+            return 12;
         }
         if (this.type == ENEMY_TYPE_UFO_ORANGE || this.type == ENEMY_TYPE_DIAMOND_YELLOW) {
-            return 18;
+            return 13;
         }
-        return 12;
+        return 11;
     }
 
     update(frame: number) {
         super.update(frame);
-        if (this.stop) {
+        if (this.stop || this.hp <= 0) {
             return;
         }
 
@@ -903,6 +1018,37 @@ class Enemy extends GameObject {
         if ((frame + this.animOffset) % 10 == 0) {
             this.setFrame((this.frame + 1) % 2);
         }
+
+        if (this.type == ENEMY_TYPE_SHOOTER || this.type == ENEMY_TYPE_SHOOTER_BLUE) {
+            this.nextShot--;
+            if (this.nextShot <= 0) {
+                this.nextShot = 45;
+                if (this.type == ENEMY_TYPE_SHOOTER_BLUE) {
+                    this.nextShot = 30;
+                }
+                globalGame.bulletManager.shoot(this.sprite.pos.x, this.sprite.pos.y - 30, -15, 0, 200, 1);
+            }
+        }
+
+        if (this.type == ENEMY_TYPE_DIAMOND_BLUE || this.type == ENEMY_TYPE_DIAMOND_YELLOW || this.type == ENEMY_TYPE_DIAMOND) {
+            this.nextShot--;
+            if (this.nextShot <= 0) {
+                this.nextShot = 60;
+                if (this.type == ENEMY_TYPE_DIAMOND_BLUE ) {
+                    this.nextShot = 45;
+                }
+                if (this.type == ENEMY_TYPE_DIAMOND_YELLOW ) {
+                    this.nextShot = 30;
+                }
+                let x = globalGame.player.sprite.pos.x - this.sprite.pos.x;
+                let y = globalGame.player.sprite.pos.y - this.sprite.pos.y;
+                let l = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+                x = x / l * 15;
+                y = y / l * 15;
+                globalGame.bulletManager.shoot(this.sprite.pos.x, this.sprite.pos.y, x, y, 200, 2);
+            }
+        }
+
     }
 
     takeDamage(amount: number) {
@@ -917,7 +1063,6 @@ class Enemy extends GameObject {
 }
 
 
-
 class EnemyManager {
     engine: Engine;
     gameObjects: GameObject[];
@@ -925,6 +1070,7 @@ class EnemyManager {
 
     time: number;
     currentAttack: number;
+    skip: number;
 
     attackPattern;
 
@@ -932,14 +1078,30 @@ class EnemyManager {
         this.engine = engine;
         this.gameObjects = gameObjects;
         this.enemies = [];
-        this.reset();
         let builder = new AttackPatternBuilder();
         this.attackPattern = builder.pattern;
+        this.skip = builder.skip;
+        this.reset();
     }
 
     reset() {
-        this.time = 0;
         this.currentAttack = 0;
+        this.time = 0;
+        if (this.skip != 0) {
+            this.time = this.attackPattern[this.skip][0];
+            this.currentAttack = this.skip;
+            for (let i = 0; i < this.skip/4; i++) {
+                if (i % 3 == 0) {
+                    globalGame.player.upgradeShield();
+                }
+                if (i % 3 == 1) {
+                    globalGame.player.upgradeWeapon();
+                }
+                if (i % 3 == 2) {
+                    globalGame.player.upgradeSpeed();
+                }
+            }
+        }
         for (let e of this.enemies) {
             e.kill(0);
         }
@@ -1205,30 +1367,31 @@ class Game {
     explosionManager: ExplosionManager;
     context: AudioContext;
     goodieManager: GoodieManager;
-
+    needHintShoot: boolean;
+    needHintMove: boolean;
     waitForSpaceKey: boolean;
     showLogo: boolean;
 
     constructor(engine: Engine) {
+        globalGame = this;
         this.engine = engine;
         this.gameObjects = [];
         this.bulletManager = new BulletManager(this);
         this.starfield = new Starfield(this);
         this.particles = new ParticleManager(this);
+        this.player = new Player(this.engine, 0, 0);
         this.enemyManager = new EnemyManager(engine, this.gameObjects);
         this.explosionManager = new ExplosionManager();
         this.goodieManager = new GoodieManager();
-
-        globalGame = this;
+        this.needHintMove = true;
+        this.needHintShoot = true;
         this.waitForSpaceKey = false;
         this.showLogo = false;
-
     }
 
     initialize() {
         this.logo = new Logo(this.engine);
         this.logo.show(this.engine);
-        this.player = new Player(this.engine, 0, 0);
         this.gameObjects.push(this.player);
         this.speak('lost in space - by j. p. preesents for j. s. 13 k. games');
     }
@@ -1256,6 +1419,11 @@ class Game {
         if (this.player.bestPoints > 0) {
             this.engine.drawCanvasCtx.font = "24px arial";
             this.engine.drawCanvasCtx.fillText("top score: " + this.player.bestPoints, 1920 - 50, 100, 300);
+        }
+
+        if (this.needHintShoot || this.needHintMove) {
+            this.engine.drawCanvasCtx.textAlign = "center";
+            this.engine.drawCanvasCtx.fillText("cursor keys to move & space key to shoot", 1920 / 2, 1000, 1000);
         }
 
         this.starfield.update();
@@ -1286,6 +1454,7 @@ class Game {
                 this.player.reset();
                 this.enemyManager.reset();
                 this.goodieManager.reset();
+                this.bulletManager.reset();
             }
             return;
         }
@@ -1306,18 +1475,23 @@ class Game {
         //input
         if (this.engine.isKeyDown(KEY_DOWN)) {
             this.player.speed.y += 1 + this.player.speedUpgrade;
+            this.needHintMove = false;
         }
         if (this.engine.isKeyDown(KEY_UP)) {
             this.player.speed.y -= 1 + this.player.speedUpgrade;
+            this.needHintMove = false;
         }
         if (this.engine.isKeyDown(KEY_LEFT)) {
             this.player.speed.x -= 1 + this.player.speedUpgrade;
+            this.needHintMove = false;
         }
         if (this.engine.isKeyDown(KEY_RIGHT)) {
             this.player.speed.x += 1 + this.player.speedUpgrade;
+            this.needHintMove = false;
         }
         if (this.engine.isKeyDown(KEY_SPACE)) {
             this.player.shoot(frame, this.bulletManager);
+            this.needHintShoot = false;
         }
         //dampening
         this.player.speed.y *= 0.9;
@@ -1326,7 +1500,7 @@ class Game {
         for (let obj of this.gameObjects) {
             obj.update(frame);
         }
-        this.bulletManager.update(frame, this.enemyManager);
+        this.bulletManager.update(frame, this.enemyManager, this.player);
     }
 
     static spritesIntersect(a: Sprite, b: Sprite) {
@@ -1380,6 +1554,16 @@ class Game {
         g.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + 0.4);
 
         o.stop(this.context.currentTime + 0.5);
+    }
+
+    static distnaceCheck(sprite: Sprite, sprite2: Sprite, distance: number) {
+        if (Game.spritesIntersect(sprite, sprite2)) {
+            let x = sprite.pos.x - sprite2.pos.x;
+            let y = sprite.pos.y - sprite2.pos.y;
+            return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) < distance;
+        }
+        return false;
+
     }
 }
 

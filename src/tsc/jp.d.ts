@@ -21,7 +21,9 @@ declare class AttackPatternBuilder {
     addSquads(): void;
     pattern: any;
     curTime: number;
+    skip: number;
     constructor();
+    skipHere(): void;
     addSquad(timeOffset: number, squad: number): void;
     compare(a: any, b: any): number;
 }
@@ -107,16 +109,19 @@ declare class Player extends GameObject {
     givePoints(amount: number): void;
 }
 declare class Bullet extends GameObject {
+    type: number;
     lifetime: number;
-    constructor(engine: Engine, x: number, y: number);
+    constructor(engine: Engine, x: number, y: number, type: number);
     update(frame: number): void;
+    setType(type: number): void;
 }
 declare class BulletManager {
     bullets: Bullet[];
     constructor(game: Game);
     getFirstDead(): Bullet;
-    shoot(x: number, y: number, speedX: number, speedY: number, lifetime: number): void;
-    update(frame: number, enemyManager: EnemyManager): void;
+    shoot(x: number, y: number, speedX: number, speedY: number, lifetime: number, type: number): void;
+    reset(): void;
+    update(frame: number, enemyManager: EnemyManager, player: Player): void;
 }
 declare const PARTICLE_BLUE = 0;
 declare const PARTICLE_EXPLO = 1;
@@ -144,6 +149,7 @@ declare class Enemy extends GameObject {
     attackStep: number;
     attackSubStep: number;
     attackSpeed: number;
+    nextShot: number;
     setFrame(frame: number): void;
     constructor(engine: Engine);
     spawn(type: number, attackVector: number[]): void;
@@ -158,6 +164,7 @@ declare class EnemyManager {
     enemies: Enemy[];
     time: number;
     currentAttack: number;
+    skip: number;
     attackPattern: any;
     constructor(engine: Engine, gameObjects: GameObject[]);
     reset(): void;
@@ -218,6 +225,8 @@ declare class Game {
     explosionManager: ExplosionManager;
     context: AudioContext;
     goodieManager: GoodieManager;
+    needHintShoot: boolean;
+    needHintMove: boolean;
     waitForSpaceKey: boolean;
     showLogo: boolean;
     constructor(engine: Engine);
@@ -227,4 +236,5 @@ declare class Game {
     static spritesIntersect(a: Sprite, b: Sprite): boolean;
     playShotSound(): void;
     playExplosionSound(): void;
+    static distnaceCheck(sprite: Sprite, sprite2: Sprite, distance: number): boolean;
 }

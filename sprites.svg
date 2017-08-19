@@ -396,6 +396,45 @@
        r="90.156113"
        gradientTransform="matrix(0.93725482,0,0,0.92156858,27.278588,101.02874)"
        gradientUnits="userSpaceOnUse" />
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter1152"
+       x="-0.36202405"
+       width="1.7240481"
+       y="-0.35800154"
+       height="1.7160031">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="3.2170552"
+         id="feGaussianBlur1154" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter1196"
+       x="-0.093103244"
+       width="1.1862065"
+       y="-1.921241"
+       height="4.8424819">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="12.026518"
+         id="feGaussianBlur1198" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter1374"
+       x="-0.035075641"
+       width="1.0701513"
+       y="-0.79866399"
+       height="2.597328">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="4.9994494"
+         id="feGaussianBlur1376" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -404,9 +443,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.70710678"
-     inkscape:cx="553.48648"
-     inkscape:cy="646.58546"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="259.17287"
+     inkscape:cy="443.56224"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -461,13 +500,6 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-12.256155,708.17317)">
-    <rect
-       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0.80000001;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-       id="rect4789"
-       width="1024"
-       height="1024"
-       x="716.25616"
-       y="-708.17316" />
     <rect
        ry="2.8361936"
        rx="13.76694"
@@ -897,5 +929,35 @@
        cy="-497.08813"
        rx="84.499252"
        ry="83.085045" />
+    <ellipse
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:#fd0000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.75280666;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0.78515756;stroke-opacity:1;filter:url(#filter1152);color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       id="path986"
+       cx="428.0343"
+       cy="-548.12659"
+       rx="10.663563"
+       ry="10.783379"
+       transform="matrix(1.3291809,0,0,1.327544,-140.9007,179.53559)" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:16px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="174.8907"
+       y="-20.048861"
+       id="text1158"><tspan
+         sodipodi:role="line"
+         id="tspan1156"
+         x="174.8907"
+         y="-20.048861"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:Arial;-inkscape-font-specification:'Arial Bold';fill:#ffffff">tweet your best score @jppresents for praise</tspan></text>
+    <text
+       id="text1212"
+       y="-20.048861"
+       x="174.8907"
+       style="font-style:normal;font-weight:normal;font-size:16px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter1374)"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:Arial;-inkscape-font-specification:'Arial Bold';fill:#ffffff"
+         y="-20.048861"
+         x="174.8907"
+         id="tspan1210"
+         sodipodi:role="line">tweet your best score @jppresents for praise</tspan></text>
   </g>
 </svg>

@@ -54,11 +54,33 @@ var SQUADS = [
     /*  6*/ [30, ENEMY_TYPE_UFO, 1, ENEMY_TYPE_UFO, 1, ENEMY_TYPE_UFO_BLUE, 1],
     /*  7*/ [30, ENEMY_TYPE_UFO, 0, ENEMY_TYPE_UFO, 0, ENEMY_TYPE_UFO_BLUE, 0],
     /*  8*/ [0, ENEMY_TYPE_SHOOTER, 5, ENEMY_TYPE_SHOOTER, 6],
+    /*  9*/ [20, ENEMY_TYPE_SHOOTER, 2, ENEMY_TYPE_SHOOTER, 3, ENEMY_TYPE_SHOOTER, 4],
+    /* 10*/ [20, ENEMY_TYPE_UFO, 5, ENEMY_TYPE_UFO, 5, ENEMY_TYPE_UFO, 5, ENEMY_TYPE_UFO_BLUE, 5, ENEMY_TYPE_SHOOTER, 5],
+    /* 11*/ [50, ENEMY_TYPE_DIAMOND, 3, ENEMY_TYPE_DIAMOND, 4, ENEMY_TYPE_DIAMOND, 2],
+    /* 12*/ [50, ENEMY_TYPE_DIAMOND, 4, ENEMY_TYPE_DIAMOND, 2, ENEMY_TYPE_DIAMOND, 3],
+    /* 13*/ [30, ENEMY_TYPE_UFO_YELLOW, 7, ENEMY_TYPE_UFO_YELLOW, 7, ENEMY_TYPE_UFO_YELLOW, 7, ENEMY_TYPE_UFO_YELLOW, 7, ENEMY_TYPE_UFO_YELLOW, 7, ENEMY_TYPE_DIAMOND_BLUE, 7],
+    /* 14 */ [30, ENEMY_TYPE_UFO_YELLOW, 8, ENEMY_TYPE_UFO_YELLOW, 8, ENEMY_TYPE_UFO_YELLOW, 8, ENEMY_TYPE_UFO_YELLOW, 8, ENEMY_TYPE_UFO_YELLOW, 8, ENEMY_TYPE_DIAMOND_BLUE, 8],
+    /* 15*/ [30, ENEMY_TYPE_UFO_YELLOW, 9, ENEMY_TYPE_UFO_YELLOW, 9, ENEMY_TYPE_UFO_YELLOW, 9, ENEMY_TYPE_UFO_YELLOW, 9, ENEMY_TYPE_UFO_YELLOW, 9, ENEMY_TYPE_DIAMOND_BLUE, 9],
+    /* 16*/ [30, ENEMY_TYPE_UFO_YELLOW, 10, ENEMY_TYPE_UFO_YELLOW, 10, ENEMY_TYPE_UFO_YELLOW, 10, ENEMY_TYPE_UFO_YELLOW, 10, ENEMY_TYPE_UFO_YELLOW, 10, ENEMY_TYPE_DIAMOND_BLUE, 10],
+    /* 17*/ [50, ENEMY_TYPE_DIAMOND_BLUE, 0, ENEMY_TYPE_DIAMOND, 0, ENEMY_TYPE_DIAMOND, 0],
+    /* 18*/ [50, ENEMY_TYPE_DIAMOND_YELLOW, 1, ENEMY_TYPE_DIAMOND, 1, ENEMY_TYPE_DIAMOND, 1],
+    /* 19*/ [0, ENEMY_TYPE_UFO_YELLOW, 11, ENEMY_TYPE_UFO_YELLOW, 12, ENEMY_TYPE_UFO_YELLOW, 13],
+    /* 20*/ [0, ENEMY_TYPE_UFO_YELLOW, 2, ENEMY_TYPE_UFO_YELLOW, 3, ENEMY_TYPE_UFO_YELLOW, 4],
+    /* 21*/ [30, ENEMY_TYPE_SHOOTER_BLUE, 7, ENEMY_TYPE_SHOOTER, 7, ENEMY_TYPE_SHOOTER, 7, ENEMY_TYPE_SHOOTER, 7, ENEMY_TYPE_SHOOTER, 7, ENEMY_TYPE_SHOOTER, 7],
+    /* 22*/ [30, ENEMY_TYPE_SHOOTER_BLUE, 10, ENEMY_TYPE_SHOOTER, 10, ENEMY_TYPE_SHOOTER, 10, ENEMY_TYPE_SHOOTER, 10, ENEMY_TYPE_SHOOTER, 10, ENEMY_TYPE_SHOOTER, 10],
+    /* 23*/ [50, ENEMY_TYPE_DIAMOND_YELLOW, 1, ENEMY_TYPE_DIAMOND_YELLOW, 1, ENEMY_TYPE_DIAMOND_YELLOW, 1],
+    /* 24*/ [50, ENEMY_TYPE_UFO_ORANGE, 8, ENEMY_TYPE_UFO_ORANGE, 8, ENEMY_TYPE_UFO_ORANGE, 8],
+    /* 25*/ [50, ENEMY_TYPE_UFO_ORANGE, 9, ENEMY_TYPE_UFO_ORANGE, 9, ENEMY_TYPE_UFO_ORANGE, 9, ENEMY_TYPE_DIAMOND_YELLOW, 9],
+    /* 26*/ [0, ENEMY_TYPE_UFO_ORANGE, 2, ENEMY_TYPE_UFO_ORANGE, 12, ENEMY_TYPE_UFO_ORANGE, 4, ENEMY_TYPE_DIAMOND_YELLOW, 7],
+    /* 27*/ [10, ENEMY_TYPE_UFO_ORANGE, 3, ENEMY_TYPE_UFO_ORANGE, 3, ENEMY_TYPE_DIAMOND_YELLOW, 3, ENEMY_TYPE_UFO_BLUE, 3],
+    /* 28*/ [10, ENEMY_TYPE_UFO_ORANGE, 2, ENEMY_TYPE_UFO_ORANGE, 2, ENEMY_TYPE_DIAMOND_YELLOW, 2, ENEMY_TYPE_UFO_BLUE, 2],
+    /* 29*/ [10, ENEMY_TYPE_UFO_ORANGE, 4, ENEMY_TYPE_UFO_ORANGE, 4, ENEMY_TYPE_DIAMOND_YELLOW, 4, ENEMY_TYPE_UFO_BLUE, 4],
 ];
 var AttackPatternBuilder = (function () {
     function AttackPatternBuilder() {
         this.pattern = [];
         this.curTime = 0;
+        this.skip = 0;
         this.addSquads();
         this.pattern.sort(this.compare);
     }
@@ -73,9 +95,48 @@ var AttackPatternBuilder = (function () {
         this.addSquad(200, 6);
         this.addSquad(200, 7);
         this.addSquad(200, 6);
+        this.addSquad(200, 7);
+        this.addSquad(200, 6);
         this.addSquad(0, 7);
-        //ufo beginning end
-        this.addSquad(0, 8);
+        //shooter & ufos
+        this.addSquad(300, 10);
+        this.addSquad(200, 9);
+        this.addSquad(200, 8);
+        this.addSquad(100, 8);
+        this.addSquad(200, 9);
+        this.addSquad(300, 10);
+        //now with diamonds
+        this.addSquad(300, 11);
+        this.addSquad(300, 12);
+        this.addSquad(300, 13);
+        this.addSquad(300, 12);
+        this.addSquad(300, 14);
+        this.addSquad(300, 11);
+        this.addSquad(300, 15);
+        this.addSquad(300, 12);
+        this.addSquad(300, 16);
+        this.addSquad(300, 17);
+        this.addSquad(300, 18);
+        this.addSquad(300, 20);
+        this.addSquad(300, 19);
+        for (var i = 0; i < 20; i++) {
+            this.addSquad(10 + Math.floor(Math.random() * 300), 5 + Math.floor(Math.random() * (15)));
+        }
+        this.addSquad(300, 21);
+        this.addSquad(300, 22);
+        this.addSquad(300, 23);
+        this.addSquad(300, 24);
+        this.addSquad(300, 25);
+        this.addSquad(300, 26);
+        this.addSquad(300, 27);
+        this.addSquad(300, 28);
+        this.addSquad(300, 29);
+        for (var i = 0; i < 100; i++) {
+            this.addSquad(10 + Math.floor(Math.random() * 300), 10 + Math.floor(Math.random() * (SQUADS.length - 11)));
+        }
+    };
+    AttackPatternBuilder.prototype.skipHere = function () {
+        this.skip = this.pattern.length;
     };
     AttackPatternBuilder.prototype.addSquad = function (timeOffset, squad) {
         this.curTime += timeOffset;
@@ -130,14 +191,26 @@ var Engine = (function () {
         this.trackedKeys = [];
         //recolor copy sprites on the sprite sheet
         //blue ufo, yellow ufo, orange ufo
-        this.recolorCopy(this.spriteCanvasCtx, 4 * 64, 0, 64 * 2, 64 * 2, [{ r: 85, g: 153, b: 255 }, { r: 255, g: 204, b: 0 }, { r: 255, g: 100, b: 55 }]);
+        this.recolorCopy(this.spriteCanvasCtx, 4 * 64, 0, 64 * 2, 64 * 2, [{ r: 85, g: 153, b: 255 }, {
+                r: 255,
+                g: 204,
+                b: 0
+            }, { r: 255, g: 100, b: 55 }]);
         //shooter blue
         this.recolorCopy(this.spriteCanvasCtx, 8 * 64, 0, 64, 64 * 4, [{ r: 85, g: 153, b: 255 }]);
         //diamonds blue, yellow
-        this.recolorCopy(this.spriteCanvasCtx, 9 * 64, 0, 2 * 64, 64 * 4, [{ r: 85, g: 153, b: 255 }, { r: 255, g: 204, b: 0 }]);
+        this.recolorCopy(this.spriteCanvasCtx, 9 * 64, 0, 2 * 64, 64 * 4, [{ r: 85, g: 153, b: 255 }, {
+                r: 255,
+                g: 204,
+                b: 0
+            }]);
         //goodies
         //yellow, blue, green, white
-        this.recolorCopy(this.spriteCanvasCtx, 7 * 64, 0, 64, 64, [{ r: 255, g: 204, b: 0 }, { r: 42, g: 170, b: 255 }, { r: 0, g: 190, b: 0 }, { r: 255, g: 255, b: 255 }]);
+        this.recolorCopy(this.spriteCanvasCtx, 7 * 64, 0, 64, 64, [{ r: 255, g: 204, b: 0 }, {
+                r: 42,
+                g: 170,
+                b: 255
+            }, { r: 0, g: 190, b: 0 }, { r: 255, g: 255, b: 255 }]);
         document.onkeydown = this.keyDown.bind(this);
         document.onkeyup = this.keyUp.bind(this);
         this.game = new Game(this);
@@ -313,7 +386,7 @@ var Player = (function (_super) {
                         speedY = -4;
                     }
                 }
-                bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, 25, speedY, 200);
+                bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, 25, speedY, 200, 0);
             }
             for (var i = 0; i < this.backShotsPerShot; i++) {
                 var speedY = 0;
@@ -326,7 +399,7 @@ var Player = (function (_super) {
                         speedY = -4;
                     }
                 }
-                bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, -25, speedY, 200);
+                bulletManager.shoot(this.sprite.pos.x + 30, this.sprite.pos.y + 20, -25, speedY, 200, 0);
             }
             this.lastShotTime = frame;
             globalGame.playShotSound();
@@ -392,40 +465,31 @@ var Player = (function (_super) {
     Player.prototype.upgradeWeapon = function () {
         this.weaponUpgrade += 1;
         this.points += 50;
-        if (this.weaponUpgrade <= 10) {
+        if (this.weaponUpgrade <= 7) {
             globalGame.speak("weapon systems improved!");
         }
         if (this.weaponUpgrade == 1) {
-            this.breakBetweenShots = 16;
-        }
-        if (this.weaponUpgrade == 2) {
             this.breakBetweenShots = 13;
         }
-        if (this.weaponUpgrade == 3) {
+        if (this.weaponUpgrade == 2) {
             this.spreadShots = true;
         }
         if (this.weaponUpgrade == 3) {
             this.breakBetweenShots = 10;
-        }
-        if (this.weaponUpgrade == 4) {
             this.backShotsPerShot = 1;
         }
-        if (this.weaponUpgrade == 5) {
+        if (this.weaponUpgrade == 4) {
             this.shotsPerShot = 2;
-        }
-        if (this.weaponUpgrade == 6) {
             this.backShotsPerShot = 2;
         }
-        if (this.weaponUpgrade == 7) {
+        if (this.weaponUpgrade == 5) {
             this.shotsPerShot = 3;
         }
-        if (this.weaponUpgrade == 8) {
+        if (this.weaponUpgrade == 6) {
             this.backShotsPerShot = 3;
-        }
-        if (this.weaponUpgrade == 9) {
             this.breakBetweenShots = 8;
         }
-        if (this.weaponUpgrade == 10) {
+        if (this.weaponUpgrade == 7) {
             this.breakBetweenShots = 9;
         }
     };
@@ -439,20 +503,19 @@ var Player = (function (_super) {
     Player.prototype.upgradeSpeed = function () {
         this.points += 50;
         globalGame.speak("speed increased!");
-        this.speedUpgrade += 0.1;
+        this.speedUpgrade += 0.2;
     };
     Player.prototype.givePoints = function (amount) {
         this.points += amount;
-        globalGame.speak("bonus points!");
+        globalGame.speak(amount + " bonus points!");
     };
     return Player;
 }(GameObject));
 var Bullet = (function (_super) {
     __extends(Bullet, _super);
-    function Bullet(engine, x, y) {
+    function Bullet(engine, x, y, type) {
         var _this = _super.call(this, engine, x, y) || this;
-        _this.sprite.srcX = 64 * 2;
-        _this.sprite.srcY = 0;
+        _this.setType(type);
         return _this;
     }
     Bullet.prototype.update = function (frame) {
@@ -464,13 +527,25 @@ var Bullet = (function (_super) {
             this.kill(0);
         }
     };
+    Bullet.prototype.setType = function (type) {
+        this.type = type;
+        this.sprite.srcX = 64 * 2;
+        this.sprite.srcY = 0;
+        if (type == 1) {
+            this.sprite.srcX = 64 * 6;
+        }
+        if (type == 2) {
+            this.sprite.srcX = 64 * 6;
+            this.sprite.srcY = 64 * 2;
+        }
+    };
     return Bullet;
 }(GameObject));
 var BulletManager = (function () {
     function BulletManager(game) {
         this.bullets = [];
         for (var i = 0; i < 200; i++) {
-            var b = new Bullet(game.engine, 0, 0);
+            var b = new Bullet(game.engine, 0, 0, 0);
             this.bullets.push(b);
             b.kill(0);
         }
@@ -484,7 +559,7 @@ var BulletManager = (function () {
         }
         return null;
     };
-    BulletManager.prototype.shoot = function (x, y, speedX, speedY, lifetime) {
+    BulletManager.prototype.shoot = function (x, y, speedX, speedY, lifetime, type) {
         var bullet = this.getFirstDead();
         if (bullet != null) {
             bullet.lifetime = lifetime;
@@ -494,13 +569,26 @@ var BulletManager = (function () {
             bullet.speed.y = speedY;
             bullet.hp = 1;
             bullet.sprite.visible = true;
+            bullet.setType(type);
         }
     };
-    BulletManager.prototype.update = function (frame, enemyManager) {
+    BulletManager.prototype.reset = function () {
+        for (var _i = 0, _a = this.bullets; _i < _a.length; _i++) {
+            var b = _a[_i];
+            b.kill(0);
+        }
+    };
+    BulletManager.prototype.update = function (frame, enemyManager, player) {
         for (var _i = 0, _a = this.bullets; _i < _a.length; _i++) {
             var b = _a[_i];
             b.update(frame);
-            if (b.hp > 0) {
+            if (b.hp > 0 && b.type > 0) {
+                if (Game.distnaceCheck(b.sprite, player.sprite, 12 + 60)) {
+                    player.takeDamage(1);
+                    b.kill(0);
+                }
+            }
+            if (b.hp > 0 && b.type == 0) {
                 for (var _b = 0, _c = enemyManager.enemies; _b < _c.length; _b++) {
                     var e = _c[_b];
                     if (e.hp > 0) {
@@ -685,12 +773,13 @@ var Enemy = (function (_super) {
         this.attackVector = attackVector;
         this.attackStep = 0;
         this.attackSubStep = 0;
+        this.nextShot = 10;
         this.hp = 1;
         if (this.type == ENEMY_TYPE_UFO_YELLOW || this.type == ENEMY_TYPE_DIAMOND || this.type == ENEMY_TYPE_DIAMOND_BLUE) {
-            this.hp = 2;
+            this.hp = 4;
         }
         if (this.type == ENEMY_TYPE_UFO_ORANGE || this.type == ENEMY_TYPE_DIAMOND_YELLOW) {
-            this.hp = 4;
+            this.hp = 8;
         }
         this.attackSpeed = this.calcAttackSpeed(attackVector[0], attackVector[1], attackVector[2], attackVector[3]);
         this.setFrame(0);
@@ -707,16 +796,16 @@ var Enemy = (function (_super) {
             return 8;
         }
         if (this.type == ENEMY_TYPE_UFO_YELLOW) {
-            return 14;
+            return 12;
         }
         if (this.type == ENEMY_TYPE_UFO_ORANGE || this.type == ENEMY_TYPE_DIAMOND_YELLOW) {
-            return 18;
+            return 13;
         }
-        return 12;
+        return 11;
     };
     Enemy.prototype.update = function (frame) {
         _super.prototype.update.call(this, frame);
-        if (this.stop) {
+        if (this.stop || this.hp <= 0) {
             return;
         }
         var calcSpeed = false;
@@ -744,6 +833,34 @@ var Enemy = (function (_super) {
         if ((frame + this.animOffset) % 10 == 0) {
             this.setFrame((this.frame + 1) % 2);
         }
+        if (this.type == ENEMY_TYPE_SHOOTER || this.type == ENEMY_TYPE_SHOOTER_BLUE) {
+            this.nextShot--;
+            if (this.nextShot <= 0) {
+                this.nextShot = 45;
+                if (this.type == ENEMY_TYPE_SHOOTER_BLUE) {
+                    this.nextShot = 30;
+                }
+                globalGame.bulletManager.shoot(this.sprite.pos.x, this.sprite.pos.y - 30, -15, 0, 200, 1);
+            }
+        }
+        if (this.type == ENEMY_TYPE_DIAMOND_BLUE || this.type == ENEMY_TYPE_DIAMOND_YELLOW || this.type == ENEMY_TYPE_DIAMOND) {
+            this.nextShot--;
+            if (this.nextShot <= 0) {
+                this.nextShot = 60;
+                if (this.type == ENEMY_TYPE_DIAMOND_BLUE) {
+                    this.nextShot = 45;
+                }
+                if (this.type == ENEMY_TYPE_DIAMOND_YELLOW) {
+                    this.nextShot = 30;
+                }
+                var x = globalGame.player.sprite.pos.x - this.sprite.pos.x;
+                var y = globalGame.player.sprite.pos.y - this.sprite.pos.y;
+                var l = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+                x = x / l * 15;
+                y = y / l * 15;
+                globalGame.bulletManager.shoot(this.sprite.pos.x, this.sprite.pos.y, x, y, 200, 2);
+            }
+        }
     };
     Enemy.prototype.takeDamage = function (amount) {
         this.hp -= amount;
@@ -761,13 +878,29 @@ var EnemyManager = (function () {
         this.engine = engine;
         this.gameObjects = gameObjects;
         this.enemies = [];
-        this.reset();
         var builder = new AttackPatternBuilder();
         this.attackPattern = builder.pattern;
+        this.skip = builder.skip;
+        this.reset();
     }
     EnemyManager.prototype.reset = function () {
-        this.time = 0;
         this.currentAttack = 0;
+        this.time = 0;
+        if (this.skip != 0) {
+            this.time = this.attackPattern[this.skip][0];
+            this.currentAttack = this.skip;
+            for (var i = 0; i < this.skip / 4; i++) {
+                if (i % 3 == 0) {
+                    globalGame.player.upgradeShield();
+                }
+                if (i % 3 == 1) {
+                    globalGame.player.upgradeWeapon();
+                }
+                if (i % 3 == 2) {
+                    globalGame.player.upgradeSpeed();
+                }
+            }
+        }
         for (var _i = 0, _a = this.enemies; _i < _a.length; _i++) {
             var e = _a[_i];
             e.kill(0);
@@ -1003,22 +1136,24 @@ var GoodieManager = (function () {
 }());
 var Game = (function () {
     function Game(engine) {
+        globalGame = this;
         this.engine = engine;
         this.gameObjects = [];
         this.bulletManager = new BulletManager(this);
         this.starfield = new Starfield(this);
         this.particles = new ParticleManager(this);
+        this.player = new Player(this.engine, 0, 0);
         this.enemyManager = new EnemyManager(engine, this.gameObjects);
         this.explosionManager = new ExplosionManager();
         this.goodieManager = new GoodieManager();
-        globalGame = this;
+        this.needHintMove = true;
+        this.needHintShoot = true;
         this.waitForSpaceKey = false;
         this.showLogo = false;
     }
     Game.prototype.initialize = function () {
         this.logo = new Logo(this.engine);
         this.logo.show(this.engine);
-        this.player = new Player(this.engine, 0, 0);
         this.gameObjects.push(this.player);
         this.speak('lost in space - by j. p. preesents for j. s. 13 k. games');
     };
@@ -1044,6 +1179,10 @@ var Game = (function () {
             this.engine.drawCanvasCtx.font = "24px arial";
             this.engine.drawCanvasCtx.fillText("top score: " + this.player.bestPoints, 1920 - 50, 100, 300);
         }
+        if (this.needHintShoot || this.needHintMove) {
+            this.engine.drawCanvasCtx.textAlign = "center";
+            this.engine.drawCanvasCtx.fillText("cursor keys to move & space key to shoot", 1920 / 2, 1000, 1000);
+        }
         this.starfield.update();
         this.explosionManager.update(this.particles);
         this.particles.update(frame);
@@ -1068,6 +1207,7 @@ var Game = (function () {
                 this.player.reset();
                 this.enemyManager.reset();
                 this.goodieManager.reset();
+                this.bulletManager.reset();
             }
             return;
         }
@@ -1084,18 +1224,23 @@ var Game = (function () {
         //input
         if (this.engine.isKeyDown(KEY_DOWN)) {
             this.player.speed.y += 1 + this.player.speedUpgrade;
+            this.needHintMove = false;
         }
         if (this.engine.isKeyDown(KEY_UP)) {
             this.player.speed.y -= 1 + this.player.speedUpgrade;
+            this.needHintMove = false;
         }
         if (this.engine.isKeyDown(KEY_LEFT)) {
             this.player.speed.x -= 1 + this.player.speedUpgrade;
+            this.needHintMove = false;
         }
         if (this.engine.isKeyDown(KEY_RIGHT)) {
             this.player.speed.x += 1 + this.player.speedUpgrade;
+            this.needHintMove = false;
         }
         if (this.engine.isKeyDown(KEY_SPACE)) {
             this.player.shoot(frame, this.bulletManager);
+            this.needHintShoot = false;
         }
         //dampening
         this.player.speed.y *= 0.9;
@@ -1104,7 +1249,7 @@ var Game = (function () {
             var obj = _c[_b];
             obj.update(frame);
         }
-        this.bulletManager.update(frame, this.enemyManager);
+        this.bulletManager.update(frame, this.enemyManager, this.player);
     };
     Game.spritesIntersect = function (a, b) {
         return (a.pos.x + a.width - 1 >= b.pos.x && a.pos.x <= b.pos.x + b.width - 1 && a.pos.y + a.height - 1 >= b.pos.y && a.pos.y <= b.pos.y + b.height - 1);
@@ -1146,6 +1291,14 @@ var Game = (function () {
         g.gain.value = 0.2;
         g.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + 0.4);
         o.stop(this.context.currentTime + 0.5);
+    };
+    Game.distnaceCheck = function (sprite, sprite2, distance) {
+        if (Game.spritesIntersect(sprite, sprite2)) {
+            var x = sprite.pos.x - sprite2.pos.x;
+            var y = sprite.pos.y - sprite2.pos.y;
+            return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) < distance;
+        }
+        return false;
     };
     return Game;
 }());
