@@ -1,6 +1,6 @@
-//svg: http://www.svgminify.com/
-//js: http://esprima.org/demo/minify.html
-//Size zip stand 19th of august is 11kb (with minify und normal zip)
+//svg minimize: https://web-design-weekly.com/2014/10/22/optimizing-svg-web/ (npm svgo)
+//js minimize: http://closure-compiler.appspot.com
+//Size zip 9.952 bytes as of 08/26/2017
 
 const KEY_LEFT = 37;
 const KEY_UP = 38;
