@@ -426,18 +426,17 @@ var Player = (function (_super) {
     };
     Player.prototype.takeDamage = function (amount) {
         if (this.shield) {
-            this.shield = false;
-            globalGame.speak("shield lost");
             return true;
         }
         if (this.hp > 0) {
-            this.hp -= amount;
+            // Make Will invincible 🤣
+            // this.hp -= amount;
             if (this.hp <= 0) {
                 this.kill(70);
                 this.sprite.visible = true; //do not hide dead player
                 this.engine.bringSpriteToBack(this.sprite);
                 globalGame.explosionManager.explode(70, this.sprite.pos.x, this.sprite.pos.y, 64 * 2, 64 * 2, 3);
-                globalGame.speak("hull integrity zero percent");
+                globalGame.speak("Watch out for the triangles. I mean. Diamonds Wilhelm!");
             }
         }
         return false;
@@ -448,15 +447,17 @@ var Player = (function (_super) {
         this.sprite.pos.x = 100;
         this.sprite.pos.y = this.engine.getHeight() / 2;
         this.spreadShots = false;
-        this.breakBetweenShots = 20;
+        this.breakBetweenShots = 2;
         this.shield = false;
         this.weaponUpgrade = 0;
-        this.speedUpgrade = 0;
+        this.speedUpgrade = 3;
         this.shotsPerShot = 1;
-        this.backShotsPerShot = 0;
+        this.backShotsPerShot = 2;
+        this.spreadShots = true;
+        this.shield = true;
         if (this.points > this.bestPoints) {
             this.bestPoints = this.points;
-            globalGame.speak("the new top score is " + this.bestPoints + " points");
+            globalGame.speak("the new top score is " + this.bestPoints + ". Almost as good as Lee Reilly's score of 5480.");
         }
         this.points = 0;
         this.shots = 0;
@@ -465,49 +466,50 @@ var Player = (function (_super) {
     Player.prototype.upgradeWeapon = function () {
         this.weaponUpgrade += 1;
         this.points += 50;
-        if (this.weaponUpgrade <= 7) {
-            globalGame.speak("weapon systems improved!");
-        }
-        if (this.weaponUpgrade == 1) {
-            this.breakBetweenShots = 13;
-        }
-        if (this.weaponUpgrade == 2) {
-            this.spreadShots = true;
-        }
-        if (this.weaponUpgrade == 3) {
-            this.breakBetweenShots = 10;
-            this.backShotsPerShot = 1;
-        }
-        if (this.weaponUpgrade == 4) {
-            this.shotsPerShot = 2;
-            this.backShotsPerShot = 2;
-        }
-        if (this.weaponUpgrade == 5) {
-            this.shotsPerShot = 3;
-        }
-        if (this.weaponUpgrade == 6) {
-            this.backShotsPerShot = 3;
-            this.breakBetweenShots = 8;
-        }
-        if (this.weaponUpgrade == 7) {
-            this.breakBetweenShots = 9;
-        }
+        globalGame.speak("Nice flyin Will");
+        // if (this.weaponUpgrade <= 7) {
+        //     globalGame.speak("weapon systems improved!");
+        // }
+        // if (this.weaponUpgrade == 1) {
+        //     this.breakBetweenShots = 13;
+        // }
+        // if (this.weaponUpgrade == 2) {
+        //     this.spreadShots = true;
+        // }
+        // if (this.weaponUpgrade == 3) {
+        //     this.breakBetweenShots = 10;
+        //     this.backShotsPerShot = 1;
+        // }
+        // if (this.weaponUpgrade == 4) {
+        //     this.shotsPerShot = 2;
+        //     this.backShotsPerShot = 2;
+        // }
+        // if (this.weaponUpgrade == 5) {
+        //     this.shotsPerShot = 3;
+        // }
+        // if (this.weaponUpgrade == 6) {
+        //     this.backShotsPerShot = 3;
+        //     this.breakBetweenShots = 8;
+        // }
+        // if (this.weaponUpgrade == 7) {
+        //     this.breakBetweenShots = 9;
+        // }
     };
     Player.prototype.upgradeShield = function () {
         this.points += 50;
         if (!this.shield) {
-            globalGame.speak("shield activated!");
+            globalGame.speak("Come on Will!");
         }
         this.shield = true;
     };
     Player.prototype.upgradeSpeed = function () {
         this.points += 50;
-        globalGame.speak("speed increased!");
+        globalGame.speak("You go Will");
         this.speedUpgrade += 0.2;
     };
     Player.prototype.givePoints = function (amount) {
         this.points += amount;
-        globalGame.speak(amount + " bonus points!");
+        globalGame.speak(amount + " bonus points! Look at Will fly!");
     };
     return Player;
 }(GameObject));
@@ -585,7 +587,7 @@ var BulletManager = (function () {
             if (b.hp > 0 && b.type > 0) {
                 if (Game.distnaceCheck(b.sprite, player.sprite, 12 + 60)) {
                     player.takeDamage(1);
-                    b.kill(0);
+                    e.takeDamage(1);
                 }
             }
             if (b.hp > 0 && b.type == 0) {
@@ -1155,7 +1157,7 @@ var Game = (function () {
         this.logo = new Logo(this.engine);
         this.logo.show(this.engine);
         this.gameObjects.push(this.player);
-        this.speak('lost in space - by j. p. preesents for j. s. 13 k. games');
+        this.speak('Hello Wilhelm Klopp - this should be much easier for you. Good luck. Have fun.');
     };
     Game.prototype.speak = function (text) {
         if (window.location.href.indexOf("silent") > -1) {
@@ -1163,7 +1165,7 @@ var Game = (function () {
         }
         var msg = new SpeechSynthesisUtterance();
         msg.volume = 0.6; // 0 to 1
-        msg.rate = 1.2; // 0.1 to 10
+        msg.rate = 1; // 0.1 to 10
         msg.pitch = 2; //0 to 2
         msg.text = text;
         msg.lang = 'en-US';
@@ -1290,7 +1292,7 @@ var Game = (function () {
         o.start(0);
         g.gain.value = 0.2;
         g.gain.exponentialRampToValueAtTime(0.0001, this.context.currentTime + 0.4);
-        o.stop(this.context.currentTime + 0.5);
+        o.stop(this.context.currentTime + 1.5);
     };
     Game.distnaceCheck = function (sprite, sprite2, distance) {
         if (Game.spritesIntersect(sprite, sprite2)) {
